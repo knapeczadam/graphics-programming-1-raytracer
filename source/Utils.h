@@ -10,12 +10,34 @@ namespace dae
 	{
 #pragma region Sphere HitTest
 		//SPHERE HIT-TESTS
-		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+
+inline float Remap(float a, float b, float t) { return (t - a) / (b - a); }
+
+inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+{
+	const Vector3 L{ sphere.origin - ray.origin }; // vector from ray's origin to sphere's center
+	const float tCA{ Vector3::Dot(L, ray.direction) }; // projection (length of P)
+	const Vector3 P{ tCA * ray.direction }; // point can be either inside or outside of the circle
+	const float od{ (sphere.origin - P).Magnitude() }; // distance between sphere's center and P
+	if (od <= sphere.radius) // if od less than or equal to radius that means P is in the circle
+	{
+		if (not ignoreHitRecord) 
 		{
-			//todo W1
-			assert(false && "No Implemented Yet!");
-			return false;
+		const float tHC{ std::sqrtf(sphere.radius * sphere.radius - od * od) };
+		const float t0{ tCA - tHC };
+		const float t1{ tCA + tHC };
+
+		hitRecord.didHit = true;
+		hitRecord.t = Remap(sphere.origin.z, sphere.origin.z - sphere.radius, t0);
+		hitRecord.t = t0;
+		hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+		hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+		hitRecord.materialIndex = sphere.materialIndex;
 		}
+		return true;
+	}
+	return false;
+}
 
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
 		{
@@ -27,8 +49,24 @@ namespace dae
 		//PLANE HIT-TESTS
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W1
-			assert(false && "No Implemented Yet!");
+			const float denom{ Vector3::Dot(ray.direction, plane.normal) };
+			if (denom < 0.0f)
+			{
+				Vector3 oPlaneoRay{ plane.origin - ray.origin };
+				const float t{ Vector3::Dot(oPlaneoRay, plane.normal) / denom };
+				if (t >= ray.min and t < ray.max)
+				{
+					if (not ignoreHitRecord)
+					{
+					hitRecord.didHit = true;
+					hitRecord.t = t;
+					hitRecord.materialIndex = plane.materialIndex;
+					hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+					hitRecord.normal = plane.normal;
+					}
+					return true;
+				}
+			}
 			return false;
 		}
 

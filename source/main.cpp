@@ -11,6 +11,7 @@
 #include "Timer.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "Vector3.h"
 
 using namespace dae;
 
@@ -20,11 +21,33 @@ void ShutDown(SDL_Window* pWindow)
 	SDL_Quit();
 }
 
+void DoVectorTests()
+{
+	// Dot product
+	float dotResult{};
+	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
+	std::cout << "(1) Same direction: " << dotResult << '\n';
+	dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
+	std::cout << "(-1) Opposite direction: " << dotResult << '\n';
+	dotResult =  Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
+	std::cout << "(0) Perpendicular: " << dotResult << '\n';
+
+	// Cross product
+	Vector3 crossResult{}; // Left-Handed!
+	crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
+	std::cout << crossResult << '\n';
+	crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
+	std::cout << crossResult << '\n';
+}
+
 int main(int argc, char* args[])
 {
 	//Unreferenced parameters
 	(void)argc;
 	(void)args;
+
+	// Test cases
+	// DoVectorTests();
 
 	//Create window + surfaces
 	SDL_Init(SDL_INIT_VIDEO);
@@ -43,7 +66,7 @@ int main(int argc, char* args[])
 
 	//Initialize "framework"
 	const auto pTimer = new Timer();
-	const auto pRenderer = new Renderer(pWindow);
+	const auto pRenderer = new Renderer(pWindow, width, height);
 
 	const auto pScene = new Scene_W1();
 	pScene->Initialize();

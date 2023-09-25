@@ -28,8 +28,34 @@ namespace dae {
 
 	void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
 	{
-		//todo W1
-		assert(false && "No Implemented Yet!");
+		for (const auto& sphere : m_SphereGeometries)
+		{
+			HitRecord hit;
+			if (dae::GeometryUtils::HitTest_Sphere(sphere, ray, hit))
+			{
+				closestHit.didHit = true;
+				if (hit.t < closestHit.t)
+				{
+					closestHit.t = hit.t;
+					closestHit.materialIndex = sphere.materialIndex;
+				}
+			}
+		}
+
+		for (const auto& plane : m_PlaneGeometries)
+		{
+			HitRecord hit;
+			if (dae::GeometryUtils::HitTest_Plane(plane, ray, hit))
+			{
+				closestHit.didHit = true;
+				if (hit.t < closestHit.t)
+				{
+					closestHit.t = hit.t;
+					closestHit.materialIndex = plane.materialIndex;
+				}
+			}
+		}
+
 	}
 
 	bool Scene::DoesHit(const Ray& ray) const
@@ -107,10 +133,9 @@ namespace dae {
 #pragma region SCENE W1
 	void Scene_W1::Initialize()
 	{
-				//default: Material id0 >> SolidColor Material (RED)
+		//default: Material id0 >> SolidColor Material (RED)
 		constexpr unsigned char matId_Solid_Red = 0;
 		const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
-
 		const unsigned char matId_Solid_Yellow = AddMaterial(new Material_SolidColor{ colors::Yellow });
 		const unsigned char matId_Solid_Green = AddMaterial(new Material_SolidColor{ colors::Green });
 		const unsigned char matId_Solid_Magenta = AddMaterial(new Material_SolidColor{ colors::Magenta });

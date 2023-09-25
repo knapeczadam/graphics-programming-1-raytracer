@@ -12,7 +12,7 @@ namespace dae
 	class Renderer final
 	{
 	public:
-		Renderer(SDL_Window* pWindow);
+		Renderer(SDL_Window* pWindow, uint32_t width, uint32_t height);
 		~Renderer() = default;
 
 		Renderer(const Renderer&) = delete;
@@ -31,5 +31,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
+		const float m_fWidth;
+		const float m_fHeight;
 	};
 }

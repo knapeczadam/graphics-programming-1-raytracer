@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
 
 #include "Math.h"
 #include "DataTypes.h"
@@ -50,6 +51,8 @@ namespace dae
 		std::vector<TriangleMesh> m_TriangleMeshGeometries{};
 		std::vector<Light> m_Lights{};
 		std::vector<Material*> m_Materials{};
+
+		std::map<Vector3, int> m_Hits;
 
 		Camera m_Camera{};
 

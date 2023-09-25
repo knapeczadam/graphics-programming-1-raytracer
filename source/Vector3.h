@@ -1,5 +1,8 @@
 #pragma once
 
+#include <iostream>
+
+
 namespace dae
 {
 	struct Vector4;
@@ -47,6 +50,8 @@ namespace dae
 		static const Vector3 UnitY;
 		static const Vector3 UnitZ;
 		static const Vector3 Zero;
+
+		friend std::ostream& operator<<(std::ostream& os, const Vector3& v);
 	};
 
 	//Global Operators
@@ -54,4 +59,5 @@ namespace dae
 	{
 		return { v.x * scale, v.y * scale, v.z * scale };
 	}
+
 }
