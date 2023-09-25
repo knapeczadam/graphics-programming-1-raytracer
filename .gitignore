@@ -48,12 +48,19 @@ TempFiles/
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+source/.idea/**/workspace.xml
+source/.idea/**/tasks.xml
+source/.idea/**/usage.statistics.xml
+source/.idea/**/dictionaries
+source/.idea/**/shelf
 
 # AWS User-specific
 .idea/**/aws.xml
+source/.idea/**/aws.xml
 
 # Generated files
 .idea/**/contentModel.xml
+source/.idea/**/contentModel.xml
 
 # Sensitive or high-churn files
 .idea/**/dataSources/
@@ -63,10 +70,19 @@ TempFiles/
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 .idea/**/dbnavigator.xml
+source/.idea/**/dataSources/
+source/.idea/**/dataSources.ids
+source/.idea/**/dataSources.local.xml
+source/.idea/**/sqlDataSources.xml
+source/.idea/**/dynamic.xml
+source/.idea/**/uiDesigner.xml
+source/.idea/**/dbnavigator.xml
 
 # Gradle
 .idea/**/gradle.xml
 .idea/**/libraries
+source/.idea/**/gradle.xml
+source/.idea/**/libraries
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
@@ -86,6 +102,7 @@ cmake-build-*/
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
+source/.idea/**/mongoSettings.xml
 
 # File-based project format
 *.iws
@@ -101,9 +118,11 @@ atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
 .idea/replstate.xml
+source/.idea/replstate.xml
 
 # SonarLint plugin
 .idea/sonarlint/
+source/.idea/sonarlint/
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
@@ -113,9 +132,11 @@ fabric.properties
 
 # Editor-based Rest Client
 .idea/httpRequests
+source/.idea/httpRequests
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+source/.idea/caches/build_file_checksums.ser
 
 ### CLion Patch ###
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
@@ -128,28 +149,36 @@ fabric.properties
 # Sonarlint plugin
 # https://plugins.jetbrains.com/plugin/7973-sonarlint
 .idea/**/sonarlint/
+source/.idea/**/sonarlint/
 
 # SonarQube Plugin
 # https://plugins.jetbrains.com/plugin/7238-sonarqube-community-plugin
 .idea/**/sonarIssues.xml
+source/.idea/**/sonarIssues.xml
 
 # Markdown Navigator plugin
 # https://plugins.jetbrains.com/plugin/7896-markdown-navigator-enhanced
 .idea/**/markdown-navigator.xml
 .idea/**/markdown-navigator-enh.xml
 .idea/**/markdown-navigator/
+source/.idea/**/markdown-navigator.xml
+source/.idea/**/markdown-navigator-enh.xml
+source/.idea/**/markdown-navigator/
 
 # Cache file creation bug
 # See https://youtrack.jetbrains.com/issue/JBR-2257
 .idea/$CACHE_FILE$
+source/.idea/$CACHE_FILE$
 
 # CodeStream plugin
 # https://plugins.jetbrains.com/plugin/12206-codestream
 .idea/codestream.xml
+source/.idea/codestream.xml
 
 # Azure Toolkit for IntelliJ plugin
 # https://plugins.jetbrains.com/plugin/8053-azure-toolkit-for-intellij
 .idea/**/azureSettings.xml
+source/.idea/**/azureSettings.xml
 
 ### Rider ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
