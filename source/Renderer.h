@@ -22,6 +22,7 @@ namespace dae
 
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
+		float CalculateFOV(float angle) const;
 
 	private:
 		SDL_Window* m_pWindow{};

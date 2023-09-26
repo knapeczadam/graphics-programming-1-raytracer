@@ -45,12 +45,13 @@ void Renderer::Render(Scene* pScene) const
 			// rayDirection between almost -1 and 1
 			const float rayDirectionX { (px + 0.5f) / m_fWidth * 2.0f - 1.0f };
 			const float rayDirectionY{ 1.0f - (py + 0.5f) / m_fHeight * 2.0f };
-			rayDirection.x = rayDirectionX * aspectRatio;
-			rayDirection.y = rayDirectionY;
+			const float FOV{CalculateFOV(camera.fovAngle)};
+			rayDirection.x = rayDirectionX * aspectRatio * FOV;
+			rayDirection.y = rayDirectionY * FOV;
 			rayDirection.z = 1.0f;
 			rayDirection.Normalize();
 
-			Ray viewRay{ {0.0f, 0.0f, 0.0f}, rayDirection };
+			Ray viewRay{ camera.origin, rayDirection };
 			Sphere testSphere{ {0.0f, 0.0f, 100.0f}, 50.0f , 0 };
 			Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
 
@@ -93,4 +94,10 @@ void Renderer::Render(Scene* pScene) const
 bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+}
+
+float Renderer::CalculateFOV(float angle) const
+{
+	const float halfAlpha{ (angle / 2.0f) * TO_RADIANS };
+	return std::tanf(halfAlpha);
 }
