@@ -28,7 +28,8 @@ void Renderer::Render(Scene* pScene) const
 	Camera& camera = pScene->GetCamera();
 	auto& materials = pScene->GetMaterials();
 	auto& lights = pScene->GetLights();
-
+	const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
+	std::cout << cameraToWorld << std::endl;
 	const float aspectRatio{ m_fWidth / m_fHeight };
 	Vector3 rayDirection;
 	for (float px{}; px < m_fWidth; ++px)
@@ -49,6 +50,7 @@ void Renderer::Render(Scene* pScene) const
 			rayDirection.x = rayDirectionX * aspectRatio * FOV;
 			rayDirection.y = rayDirectionY * FOV;
 			rayDirection.z = 1.0f;
+			rayDirection = cameraToWorld.TransformVector(rayDirection);
 			rayDirection.Normalize();
 
 			Ray viewRay{ camera.origin, rayDirection };

@@ -62,5 +62,7 @@ namespace dae {
 		// v1x v1y v1z v1w
 		// v2x v2y v2z v2w
 		// v3x v3y v3z v3w
+	public:
+		friend std::ostream& operator<<(std::ostream& os, const Matrix& m);
 	};
 }

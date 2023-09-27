@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "Vector4.h"
 
 #include <cassert>
 
@@ -216,4 +217,9 @@ namespace dae {
 		return *this;
 	}
 #pragma endregion
+	std::ostream& operator<<(std::ostream& os, const Matrix& m)
+	{
+		os << '[' << m[0] << ",\n " << m[1] << ",\n " << m[2] << ",\n " << m[3] << ']';
+		return os;
+	}
 }

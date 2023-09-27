@@ -86,5 +86,10 @@ namespace dae
 		if (index == 2)return z;
 		return w;
 	}
+
 #pragma endregion
+	std::ostream& operator<<(std::ostream& os, const Vector4& v)
+	{
+		return os << '[' << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ']';
+	}
 }
