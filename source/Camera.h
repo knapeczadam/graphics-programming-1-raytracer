@@ -48,17 +48,53 @@ namespace dae
 		void Update(Timer* pTimer)
 		{
 			const float deltaTime = pTimer->GetElapsed();
+			const float speed{5.0f};
 
 			//Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
-
+			if (pKeyboardState[SDL_SCANCODE_A])
+			{
+				origin -= right * deltaTime * speed;
+			}
+			else if (pKeyboardState[SDL_SCANCODE_D])
+			{
+				origin += right * deltaTime * speed;
+			}
+			if (pKeyboardState[SDL_SCANCODE_W])
+			{
+				origin += forward * deltaTime * speed;
+			}
+			else if (pKeyboardState[SDL_SCANCODE_S])
+			{
+				origin -= forward * deltaTime * speed;
+			}
 
 			//Mouse Input
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
+			mouseX = mouseX > 0 ? 1 : mouseX < 0 ? -1 : 0;
+			mouseY = mouseY > 0 ? 1 : mouseY < 0 ? -1 : 0;
+			const bool leftMouseButtonDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
+			const bool rightMouseButtonDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
+			if (leftMouseButtonDown && rightMouseButtonDown)
+			{
+				origin += up * static_cast<float>(mouseY * -1) * deltaTime * speed;
+			}
+			else if (leftMouseButtonDown)
+			{
+				origin += forward * static_cast<float>(mouseY * -1) * deltaTime * speed;
+				totalYaw += static_cast<float>(mouseX) * speed * deltaTime;
+				forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS)).TransformVector(forward);
+			}
+			else if (rightMouseButtonDown)
+			{
+				totalYaw += static_cast<float>(mouseX) * speed * deltaTime;
+				totalPitch += static_cast<float>(mouseY) * speed * deltaTime;
+				forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS) * Matrix::CreateRotationX(totalPitch * TO_RADIANS)).TransformVector(forward);
+			}
 
-			//todo: W2
-			//assert(false && "Not Implemented Yet");
+			
+			
 		}
 	};
 }

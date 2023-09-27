@@ -147,9 +147,7 @@ namespace dae {
 
 	Matrix Matrix::CreateRotation(const Vector3& r)
 	{
-		// TODO: Implement
-		assert(false && "Makes no sense to create a rotation matrix from a Vector3");
-		return {};
+		return CreateRotationX(r.x) * CreateRotationY(r.y) * CreateRotationZ(r.z);
 	}
 
 	Matrix Matrix::CreateRotation(float pitch, float yaw, float roll)
