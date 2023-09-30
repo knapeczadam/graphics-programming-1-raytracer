@@ -37,6 +37,8 @@ namespace dae
                 if (hit.t < closestHit.t)
                 {
                     closestHit.t = hit.t;
+                    closestHit.origin = hit.origin;
+                    closestHit.normal = hit.normal;
                     closestHit.materialIndex = sphere.materialIndex;
                 }
             }
@@ -51,6 +53,8 @@ namespace dae
                 if (hit.t < closestHit.t)
                 {
                     closestHit.t = hit.t;
+                    closestHit.origin = hit.origin;
+                    closestHit.normal = hit.normal;
                     closestHit.materialIndex = plane.materialIndex;
                 }
             }
@@ -59,8 +63,21 @@ namespace dae
 
     bool Scene::DoesHit(const Ray& ray) const
     {
-        //todo W3
-        assert(false && "No Implemented Yet!");
+        HitRecord hit;
+        for (const auto& sphere : m_SphereGeometries)
+        {
+            if (dae::GeometryUtils::HitTest_Sphere(sphere, ray, hit, true))
+            {
+                return true;
+            }
+        }
+        for (const auto& plane : m_PlaneGeometries)
+        {
+            if (dae::GeometryUtils::HitTest_Plane(plane, ray, hit, true))
+            {
+                return true;
+            }
+        }
         return false;
     }
 

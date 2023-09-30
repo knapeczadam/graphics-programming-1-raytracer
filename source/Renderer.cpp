@@ -12,11 +12,9 @@
 
 using namespace dae;
 
-Renderer::Renderer(SDL_Window * pWindow, uint32_t width, uint32_t height) :
+Renderer::Renderer(SDL_Window * pWindow) :
 	m_pWindow(pWindow),
-	m_pBuffer(SDL_GetWindowSurface(pWindow)),
-	m_fWidth{ static_cast<float>(width) },
-	m_fHeight{static_cast<float>(height)}
+	m_pBuffer(SDL_GetWindowSurface(pWindow))
 {
 	//Initialize
 	SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
@@ -30,11 +28,11 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 	const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
 	//std::cout << cameraToWorld << std::endl;
-	const float aspectRatio{ m_fWidth / m_fHeight };
+	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) };
 	Vector3 rayDirection;
-	for (float px{}; px < m_fWidth; ++px)
+	for (int px{}; px < m_Width; ++px)
 	{
-		for (float py{}; py < m_fHeight; ++py)
+		for (int py{}; py < m_Height; ++py)
 		{
 			/*
 			float gradient = px / m_fWidth;
@@ -44,8 +42,8 @@ void Renderer::Render(Scene* pScene) const
 
 			// + 0.5f: we need the middle of a pixel
 			// rayDirection between almost -1 and 1
-			const float rayDirectionX { (px + 0.5f) / m_fWidth * 2.0f - 1.0f };
-			const float rayDirectionY{ 1.0f - (py + 0.5f) / m_fHeight * 2.0f };
+			const float rayDirectionX { (static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f };
+			const float rayDirectionY{ 1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f };
 			const float FOV{CalculateFOV(camera.fovAngle)};
 			rayDirection.x = rayDirectionX * aspectRatio * FOV;
 			rayDirection.y = rayDirectionY * FOV;
@@ -76,6 +74,17 @@ void Renderer::Render(Scene* pScene) const
 
 				//const float scaled_t = closestHit.t / 500.0f;
 				//finalColor = { scaled_t, scaled_t, scaled_t };
+				for (const auto& light : lights)
+				{
+					closestHit.origin += closestHit.normal * 0.001f;
+					const Vector3 dirToLight{LightUtils::GetDirectionToLight(light,closestHit.origin)};
+					const float lightDistance{dirToLight.Magnitude()};
+					Ray shadowRay{ closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance };
+					if (pScene->DoesHit(shadowRay))
+					{
+						finalColor *= 0.5f;
+					}
+				}
 			}
 
 			// Test rayDirection's colors

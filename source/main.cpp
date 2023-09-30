@@ -66,7 +66,7 @@ int main(int argc, char* args[])
 
 	//Initialize "framework"
 	const auto pTimer = new Timer();
-	const auto pRenderer = new Renderer(pWindow, width, height);
+	const auto pRenderer = new Renderer(pWindow);
 
 	const auto pScene = new Scene_W2();
 	pScene->Initialize();

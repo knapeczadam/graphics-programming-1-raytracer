@@ -56,10 +56,16 @@ namespace dae
 			if (pKeyboardState[SDL_SCANCODE_A])
 			{
 				origin -= right * deltaTime * speed;
+				//forward = Matrix::CreateRotation(totalPitch * TO_RADIANS, totalYaw * TO_RADIANS, 0.0f).TransformVector(Vector3::UnitZ);
+				//forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS) * Matrix::CreateRotationX(totalPitch * TO_RADIANS)).TransformVector(Vector3::UnitZ);
+				//forward.Normalize();
 			}
 			else if (pKeyboardState[SDL_SCANCODE_D])
 			{
 				origin += right * deltaTime * speed;
+				//forward = Matrix::CreateRotation(totalPitch * TO_RADIANS, totalYaw * TO_RADIANS, 0.0f).TransformVector(Vector3::UnitZ);
+				//forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS) * Matrix::CreateRotationX(totalPitch * TO_RADIANS)).TransformVector(Vector3::UnitZ);
+				//forward.Normalize();
 			}
 			if (pKeyboardState[SDL_SCANCODE_W])
 			{
@@ -95,6 +101,7 @@ namespace dae
 			if (mouseX or mouseY)
 			{
 				forward = Matrix::CreateRotation(totalPitch * TO_RADIANS, totalYaw * TO_RADIANS, 0.0f).TransformVector(Vector3::UnitZ);
+				//forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS) * Matrix::CreateRotationX(totalPitch * TO_RADIANS)).TransformVector(Vector3::UnitZ);
 				forward.Normalize();
 			}
 		}

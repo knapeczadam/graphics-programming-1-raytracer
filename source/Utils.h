@@ -23,20 +23,24 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 	const float radius2{ sphere.radius * sphere.radius };
 	if (d2 > radius2)
 		return false;
-	if (not ignoreHitRecord)
+	const float thc{ sqrt(radius2 - d2) }; // distance from ray to sphere surface
+	float t0{ tca - thc }; // distance from ray's origin to sphere surface
+	float t1{ tca + thc }; // distance from ray's origin to sphere surface
+	//if (t0 > t1)
+	//	std::swap(t0, t1);
+	if (t0 > ray.min and t0 < ray.max)
 	{
-		const float thc{ sqrt(radius2 - d2) }; // distance from ray to sphere surface
-		float t0{ tca - thc }; // distance from ray's origin to sphere surface
-		float t1{ tca + thc }; // distance from ray's origin to sphere surface
-		//if (t0 > t1)
-		//	std::swap(t0, t1);
-		hitRecord.didHit = true;
-		hitRecord.t = t0;
-		//hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-		//hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
-		hitRecord.materialIndex = sphere.materialIndex;
+		if (not ignoreHitRecord)
+		{
+			hitRecord.didHit = true;
+			hitRecord.t = t0;
+			hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+			hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+			hitRecord.materialIndex = sphere.materialIndex;
+		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
@@ -51,20 +55,18 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 		{
 			const float denom{ Vector3::Dot(plane.normal, ray.direction) };
 			//if (denom < 0.0f)
-			if (true)
+			//if (true)
 			{
 				const float t{ Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom };
-				if (t >= ray.min and t < ray.max)
+				if (t > ray.max or t < ray.min) return false;
+				if (not ignoreHitRecord)
 				{
-					if (not ignoreHitRecord)
-					{
-						hitRecord.didHit = true;
-						hitRecord.t = t;
-						hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-						hitRecord.normal = plane.normal;
-						hitRecord.materialIndex = plane.materialIndex;
-					}
-					return true;
+					hitRecord.didHit = true;
+					hitRecord.t = t;
+					hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+					hitRecord.normal = plane.normal;
+					hitRecord.materialIndex = plane.materialIndex;
+				return true;
 				}
 			}
 		}
@@ -111,9 +113,7 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 		//Direction from target to light
 		inline Vector3 GetDirectionToLight(const Light& light, const Vector3 origin)
 		{
-			//todo W3
-			assert(false && "No Implemented Yet!");
-			return {};
+			return light.origin - origin;
 		}
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
