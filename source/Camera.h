@@ -48,7 +48,8 @@ namespace dae
 		void Update(Timer* pTimer)
 		{
 			const float deltaTime = pTimer->GetElapsed();
-			const float speed{5.0f};
+			const float speed{10.0f};
+			const float rotationSpeed{100.0f};
 
 			//Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
@@ -71,30 +72,31 @@ namespace dae
 
 			//Mouse Input
 			int mouseX{}, mouseY{};
+			const int threshold{1};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
-			mouseX = mouseX > 0 ? 1 : mouseX < 0 ? -1 : 0;
-			mouseY = mouseY > 0 ? 1 : mouseY < 0 ? -1 : 0;
+			mouseX = mouseX > threshold ? 1 : mouseX < -threshold ? -1 : 0; 
+			mouseY = mouseY > threshold ? 1 : mouseY < -threshold ? -1 : 0;
 			const bool leftMouseButtonDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 			const bool rightMouseButtonDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
-			if (leftMouseButtonDown && rightMouseButtonDown)
+			if (leftMouseButtonDown and rightMouseButtonDown)
 			{
 				origin += up * static_cast<float>(mouseY * -1) * deltaTime * speed;
 			}
 			else if (leftMouseButtonDown)
 			{
 				origin += forward * static_cast<float>(mouseY * -1) * deltaTime * speed;
-				totalYaw += static_cast<float>(mouseX) * speed * deltaTime;
-				forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS)).TransformVector(forward);
+				totalYaw += static_cast<float>(mouseX) * rotationSpeed * deltaTime;
 			}
 			else if (rightMouseButtonDown)
 			{
-				totalYaw += static_cast<float>(mouseX) * speed * deltaTime;
-				totalPitch += static_cast<float>(mouseY) * speed * deltaTime;
-				forward = (Matrix::CreateRotationY(totalYaw * TO_RADIANS) * Matrix::CreateRotationX(totalPitch * TO_RADIANS)).TransformVector(forward);
+				totalYaw += static_cast<float>(mouseX) * rotationSpeed* deltaTime;
+				totalPitch += static_cast<float>(mouseY) * rotationSpeed* deltaTime;
 			}
-
-			
-			
+			if (mouseX or mouseY)
+			{
+				forward = Matrix::CreateRotation(totalPitch * TO_RADIANS, totalYaw * TO_RADIANS, 0.0f).TransformVector(Vector3::UnitZ);
+				forward.Normalize();
+			}
 		}
 	};
 }

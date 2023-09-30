@@ -17,6 +17,8 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 {
 	const Vector3 L{ sphere.origin - ray.origin }; // vector from ray's origin to sphere's center
 	const float tca{ Vector3::Dot(L, ray.direction) }; // project vector L onto ray's direction vector
+	if (tca < 0.0f)
+		return false; // sphere is behind ray's origin (and direction
 	const float d2{ Vector3::Dot(L, L) - tca * tca }; // distance from sphere center to ray
 	const float radius2{ sphere.radius * sphere.radius };
 	if (d2 > radius2)
@@ -26,12 +28,12 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 		const float thc{ sqrt(radius2 - d2) }; // distance from ray to sphere surface
 		float t0{ tca - thc }; // distance from ray's origin to sphere surface
 		float t1{ tca + thc }; // distance from ray's origin to sphere surface
-		if (t0 > t1)
-			std::swap(t0, t1);
+		//if (t0 > t1)
+		//	std::swap(t0, t1);
 		hitRecord.didHit = true;
 		hitRecord.t = t0;
-		hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-		hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+		//hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+		//hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
 		hitRecord.materialIndex = sphere.materialIndex;
 	}
 	return true;
@@ -48,7 +50,8 @@ inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitR
 		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
 			const float denom{ Vector3::Dot(plane.normal, ray.direction) };
-			if (denom < 0.0f)
+			//if (denom < 0.0f)
+			if (true)
 			{
 				const float t{ Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom };
 				if (t >= ray.min and t < ray.max)
