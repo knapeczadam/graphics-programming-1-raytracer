@@ -36,11 +36,13 @@ namespace dae
 		Matrix CalculateCameraToWorld()
 		{
 			Matrix out;
-			const Vector3 _right{forward.z, 0.f, -forward.x};
-			const Vector3 _up = Vector3::Cross(forward, _right);
-			out[0] = Vector4{_right.Normalized(), 0.f};
-			out[1] = Vector4{_up.Normalized(), 0.f};
-			out[2] = Vector4{forward.Normalized(), 0.f};
+			//forward.Normalize();
+			//std::cout << "forward: " << forward.Magnitude() << std::endl;
+			right = Vector3{forward.z, 0.f, -forward.x};
+			up = Vector3::Cross(forward, right);
+			out[0] = Vector4{right, 0.f};
+			out[1] = Vector4{up, 0.f};
+			out[2] = Vector4{forward, 0.f};
 			out[3] = Vector4{origin, 1.f};
 			return out;
 		}
