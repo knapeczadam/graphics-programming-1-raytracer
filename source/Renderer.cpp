@@ -55,30 +55,40 @@ namespace dae
     }
 
 #pragma region Week 1
+    enum class W1_Todo
+    {
+        Todo2,
+        Todo3,
+        Todo4,
+        Todo5,
+        Todo6,
+        Todo7,
+        Todo8
+    };
+
     void Renderer::RenderScene_W1(Scene* pScene) const
     {
-        const int todo{8};
-        switch (todo)
+        switch (W1_Todo::Todo8)
         {
-        case 2:
+        case W1_Todo::Todo2:
             RenderScene_W1_Todo2(pScene);
             break;
-        case 3:
+        case W1_Todo::Todo3:
             RenderScene_W1_Todo3(pScene);
             break;
-        case 4:
+        case W1_Todo::Todo4:
             RenderScene_W1_Todo4(pScene);
             break;
-        case 5:
+        case W1_Todo::Todo5:
             RenderScene_W1_Todo5(pScene);
             break;
-        case 6:
+        case W1_Todo::Todo6:
             RenderScene_W1_Todo6(pScene);
             break;
-        case 7:
+        case W1_Todo::Todo7:
             RenderScene_W1_Todo7(pScene);
             break;
-        case 8:
+        case W1_Todo::Todo8:
             RenderScene_W1_Todo8(pScene);
             break;
         }
@@ -300,27 +310,36 @@ namespace dae
 #pragma endregion
 
 #pragma region Week 2
+    enum class W2_Todo
+    {
+        Todo1_1,
+        Todo1_2,
+        Todo2,
+        Todo4_1,
+        Todo4_2,
+        Todo5
+    };
+
     void Renderer::RenderScene_W2(Scene* pScene) const
     {
-        const int todo{5};
-        switch (todo)
+        switch (W2_Todo::Todo5)
         {
-        case 0:
+        case W2_Todo::Todo1_1:
             RenderScene_W2_Todo1_1(pScene);
             break;
-        case 1:
+        case W2_Todo::Todo1_2:
             RenderScene_W2_Todo1_2(pScene);
             break;
-        case 2:
+        case W2_Todo::Todo2:
             RenderScene_W2_Todo2(pScene);
             break;
-        case 3:
+        case W2_Todo::Todo4_1:
             RenderScene_W2_Todo4_1(pScene);
             break;
-        case 4:
+        case W2_Todo::Todo4_2:
             RenderScene_W2_Todo4_2(pScene);
             break;
-        case 5:
+        case W2_Todo::Todo5:
             RenderScene_W2_Todo5(pScene);
             break;
         }
@@ -560,46 +579,59 @@ namespace dae
 #pragma endregion
 
 #pragma region Week 3
+    enum class W3_Todo
+    {
+        Todo1,
+        Todo2,
+        Todo3,
+        Todo4,
+        Todo6,
+        Todo7,
+        Todo9,
+        Todo10,
+        Todo11,
+        Todo12,
+        Todo13
+    };
+
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
-        const int todo{1};
-        switch (todo)
+        switch (W3_Todo::Todo1)
         {
-        case 1:
+        case W3_Todo::Todo1:
             RenderScene_W3_Todo1(pScene);
             break;
-        case 2:
+        case W3_Todo::Todo2:
             RenderScene_W3_Todo2(pScene);
             break;
-        case 3:
+        case W3_Todo::Todo3:
             RenderScene_W3_Todo3(pScene);
             break;
-        case 4:
+        case W3_Todo::Todo4:
             RenderScene_W3_Todo4(pScene);
             break;
-        case 6:
+        case W3_Todo::Todo6:
             RenderScene_W3_Todo6(pScene);
             break;
-        case 7:
+        case W3_Todo::Todo7:
             RenderScene_W3_Todo7(pScene);
             break;
-        case 9:
+        case W3_Todo::Todo9:
             RenderScene_W3_Todo9(pScene);
             break;
-        case 10:
+        case W3_Todo::Todo10:
             RenderScene_W3_Todo10(pScene);
             break;
-        case 11:
+        case W3_Todo::Todo11:
             RenderScene_W3_Todo11(pScene);
             break;
-        case 12:
+        case W3_Todo::Todo12:
             RenderScene_W3_Todo12(pScene);
             break;
-        case 13:
+        case W3_Todo::Todo13:
             RenderScene_W3_Todo13(pScene);
             break;
         }
-            
     }
 
     void Renderer::RenderScene_W3_Todo1(Scene* pScene) const
