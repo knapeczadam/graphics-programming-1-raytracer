@@ -535,7 +535,6 @@ namespace dae
                 pScene->GetClosestHit(viewRay, closestHit);
 
                 ColorRGB finalColor{};
-                finalColor = materials[closestHit.materialIndex]->Shade();
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -563,90 +562,134 @@ namespace dae
 #pragma region Week 3
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
+        const int todo{1};
+        switch (todo)
+        {
+        case 1:
+            RenderScene_W3_Todo1(pScene);
+            break;
+        case 2:
+            RenderScene_W3_Todo2(pScene);
+            break;
+        case 3:
+            RenderScene_W3_Todo3(pScene);
+            break;
+        case 4:
+            RenderScene_W3_Todo4(pScene);
+            break;
+        case 6:
+            RenderScene_W3_Todo6(pScene);
+            break;
+        case 7:
+            RenderScene_W3_Todo7(pScene);
+            break;
+        case 9:
+            RenderScene_W3_Todo9(pScene);
+            break;
+        case 10:
+            RenderScene_W3_Todo10(pScene);
+            break;
+        case 11:
+            RenderScene_W3_Todo11(pScene);
+            break;
+        case 12:
+            RenderScene_W3_Todo12(pScene);
+            break;
+        case 13:
+            RenderScene_W3_Todo13(pScene);
+            break;
+        }
+            
+    }
+
+    void Renderer::RenderScene_W3_Todo1(Scene* pScene) const
+    {
         Camera& camera = pScene->GetCamera();
-        auto& materials = pScene->GetMaterials();
-        auto& lights = pScene->GetLights();
         const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
-        //std::cout << cameraToWorld << std::endl;
+        const float FOV{camera.GetFOV()};
+        auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDirection;
+        auto& lights = pScene->GetLights();
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
-                /*
-                float gradient = px / m_fWidth;
-                gradient += py / m_fWidth;
-                gradient /= 2.0f;
-                */
-
-                // + 0.5f: we need the middle of a pixel
-                // rayDirection between almost -1 and 1
-                const float rayDirectionX{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
-                const float rayDirectionY{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
-                const float FOV{camera.GetFOV()};
-                rayDirection.x = rayDirectionX * aspectRatio * FOV;
-                rayDirection.y = rayDirectionY * FOV;
+                const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                rayDirection.x = rx * aspectRatio * FOV;
+                rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
                 rayDirection = cameraToWorld.TransformVector(rayDirection);
-                //rayDirection = Matrix::CreateRotation(0.0f,camera.totalPitch * TO_RADIANS,  camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
-                //rayDirection = Matrix::CreateRotationX(camera.totalPitch * TO_RADIANS).TransformVector(rayDirection);
-                //rayDirection = Matrix::CreateRotationY(camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
                 rayDirection.Normalize();
 
                 Ray viewRay{camera.origin, rayDirection};
-                Sphere testSphere{{0.0f, 0.0f, 100.0f}, 50.0f, 0};
-                Plane testPlane{{0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0};
 
                 HitRecord closestHit{};
-
-                //GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
-                //GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
                 pScene->GetClosestHit(viewRay, closestHit);
 
-                ColorRGB finalColor{0, 0, 0};
+                ColorRGB finalColor{};
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
-                    //finalColor = materials[closestHit.materialIndex]->Shade() * closestHit.t;
-                    //const float scaled_t{ (closestHit.t - 50.0f) / 40.0f };
-                    //finalColor = { scaled_t, scaled_t, scaled_t };
-
-                    //const float scaled_t = closestHit.t / 500.0f;
-                    //finalColor = { scaled_t, scaled_t, scaled_t };
-                    if (camera.toggleShadow)
+                    for (const auto& light : lights)
                     {
-                        for (const auto& light : lights)
+                        closestHit.origin += closestHit.normal * 0.001f;
+                        const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                        const float lightDistance{dirToLight.Magnitude()};
+                        Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        if (pScene->DoesHit(shadowRay))
                         {
-                            closestHit.origin += closestHit.normal * 0.001f;
-                            const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
-                            const float lightDistance{dirToLight.Magnitude()};
-                            Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
-                            if (pScene->DoesHit(shadowRay))
-                            {
-                                finalColor *= 0.5f;
-                            }
+                            finalColor *= 0.5f;
                         }
                     }
                 }
-
-                // Test rayDirection's colors
-                //ColorRGB finalColor{ rayDirection.x, rayDirection.y , rayDirection.z };
-
-                //Update Color in Buffer
-                finalColor.MaxToOne();
-
-                m_pBufferPixels[static_cast<uint32_t>(px) + (static_cast<uint32_t>(py) * m_Width)] = SDL_MapRGB(
-                    m_pBuffer->format,
-                    static_cast<uint8_t>(finalColor.r * 255),
-                    static_cast<uint8_t>(finalColor.g * 255),
-                    static_cast<uint8_t>(finalColor.b * 255));
+                UpdateColor(finalColor, px, py);
             }
         }
-
         //@END
         //Update SDL Surface
         SDL_UpdateWindowSurface(m_pWindow);
+    }
+
+    void Renderer::RenderScene_W3_Todo2(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo3(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo4(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo6(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo7(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo9(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo10(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo11(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo12(Scene* pScene) const
+    {
+    }
+
+    void Renderer::RenderScene_W3_Todo13(Scene* pScene) const
+    {
     }
 #pragma endregion
 }

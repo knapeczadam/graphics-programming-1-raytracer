@@ -177,6 +177,7 @@ namespace dae
         AddPlane({0.f, 0.f, 125.f}, {0.f, 0.f, -1.f}, matId_Solid_Magenta);
     }
 #pragma endregion
+
 #pragma region SCENE W2
     void Scene_W2::Initialize()
     {
@@ -210,6 +211,7 @@ namespace dae
         AddPointLight({0.f, 5.f, -5.f}, 70.f, colors::White);
     }
 #pragma endregion
+
 #pragma region SCENE W3
 
     void Scene_W3::Initialize()

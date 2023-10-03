@@ -43,6 +43,17 @@ namespace dae
         void RenderScene_W2_Todo5(Scene* pScene) const;
         
         void RenderScene_W3(Scene* pScene) const;
+        void RenderScene_W3_Todo1(Scene* pScene) const;
+        void RenderScene_W3_Todo2(Scene* pScene) const;
+        void RenderScene_W3_Todo3(Scene* pScene) const;
+        void RenderScene_W3_Todo4(Scene* pScene) const;
+        void RenderScene_W3_Todo6(Scene* pScene) const;
+        void RenderScene_W3_Todo7(Scene* pScene) const;
+        void RenderScene_W3_Todo9(Scene* pScene) const;
+        void RenderScene_W3_Todo10(Scene* pScene) const;
+        void RenderScene_W3_Todo11(Scene* pScene) const;
+        void RenderScene_W3_Todo12(Scene* pScene) const;
+        void RenderScene_W3_Todo13(Scene* pScene) const;
 
         void UpdateColor(ColorRGB& finalColor, int px, int py) const;
 
