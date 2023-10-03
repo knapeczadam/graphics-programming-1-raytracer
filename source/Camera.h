@@ -18,9 +18,19 @@ namespace dae
 		{
 		}
 
+		enum class Lighting
+		{
+			OBSERVED_AREA,
+			RADIANCE,
+			BRDF,
+			COMBINED
+		};
+
 
 		Vector3 origin{};
 		float fovAngle{90.f};
+		bool toggleShadow{true};
+		Lighting lighting{Lighting::COMBINED};
 
 		//Vector3 forward{Vector3::UnitZ};
 		Vector3 forward{0.266f, -0.453f, 0.860f};
@@ -76,6 +86,32 @@ namespace dae
 			else if (pKeyboardState[SDL_SCANCODE_S])
 			{
 				origin -= forward * deltaTime * speed;
+			}
+
+			if (pKeyboardState[SDL_SCANCODE_F2])
+			{
+				toggleShadow = not toggleShadow;	
+			}
+			// next lighting enum
+			if (pKeyboardState[SDL_SCANCODE_F3])
+			{
+				lighting = static_cast<Lighting>((static_cast<int>(lighting) + 1) % 4);
+				std::cout << "LIGHTING MODE: ";
+				switch (lighting)
+				{
+					case Lighting::OBSERVED_AREA:
+						std::cout << "OBSERVED_AREA" << std::endl;
+						break;
+					case Lighting::RADIANCE:
+						std::cout << "RADIANCE" << std::endl;
+						break;
+					case Lighting::BRDF:
+						std::cout << "BRDF" << std::endl;
+						break;
+					case Lighting::COMBINED:
+						std::cout << "COMBINED" << std::endl;
+						break;
+				}
 			}
 
 			//Mouse Input

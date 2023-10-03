@@ -74,16 +74,19 @@ void Renderer::Render(Scene* pScene) const
 
 				//const float scaled_t = closestHit.t / 500.0f;
 				//finalColor = { scaled_t, scaled_t, scaled_t };
-				for (const auto& light : lights)
+				if (camera.toggleShadow)
 				{
-					closestHit.origin += closestHit.normal * 0.001f;
-					const Vector3 dirToLight{LightUtils::GetDirectionToLight(light,closestHit.origin)};
-					const float lightDistance{dirToLight.Magnitude()};
-					Ray shadowRay{ closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance };
-					if (pScene->DoesHit(shadowRay))
-					{
-						finalColor *= 0.5f;
-					}
+					 for (const auto& light : lights)
+					 {
+						  closestHit.origin += closestHit.normal * 0.001f;
+						  const Vector3 dirToLight{LightUtils::GetDirectionToLight(light,closestHit.origin)};
+						  const float lightDistance{dirToLight.Magnitude()};
+						  Ray shadowRay{ closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance };
+						  if (pScene->DoesHit(shadowRay))
+						  {
+							  finalColor *= 0.5f;
+						  }
+					 }
 				}
 			}
 
