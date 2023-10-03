@@ -7,174 +7,180 @@
 namespace dae
 {
 #pragma region GEOMETRY
-	struct Sphere
-	{
-		Vector3 origin{};
-		float radius{};
+    struct Sphere
+    {
+        Vector3 origin{};
+        float radius{};
 
-		unsigned char materialIndex{ 0 };
-	};
+        unsigned char materialIndex{0};
+    };
 
-	struct Plane
-	{
-		Vector3 origin{};
-		Vector3 normal{};
+    struct Plane
+    {
+        Vector3 origin{};
+        Vector3 normal{};
 
-		unsigned char materialIndex{ 0 };
-	};
+        unsigned char materialIndex{0};
+    };
 
-	enum class TriangleCullMode
-	{
-		FrontFaceCulling,
-		BackFaceCulling,
-		NoCulling
-	};
+    enum class TriangleCullMode
+    {
+        FrontFaceCulling,
+        BackFaceCulling,
+        NoCulling
+    };
 
-	struct Triangle
-	{
-		Triangle() = default;
-		Triangle(const Vector3& _v0, const Vector3& _v1, const Vector3& _v2, const Vector3& _normal):
-			v0{_v0}, v1{_v1}, v2{_v2}, normal{_normal.Normalized()}{}
+    struct Triangle
+    {
+        Triangle() = default;
 
-		Triangle(const Vector3& _v0, const Vector3& _v1, const Vector3& _v2) :
-			v0{ _v0 }, v1{ _v1 }, v2{ _v2 }
-		{
-			const Vector3 edgeV0V1 = v1 - v0;
-			const Vector3 edgeV0V2 = v2 - v0;
-			normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
-		}
+        Triangle(const Vector3& _v0, const Vector3& _v1, const Vector3& _v2, const Vector3& _normal):
+            v0{_v0}, v1{_v1}, v2{_v2}, normal{_normal.Normalized()}
+        {
+        }
 
-		Vector3 v0{};
-		Vector3 v1{};
-		Vector3 v2{};
+        Triangle(const Vector3& _v0, const Vector3& _v1, const Vector3& _v2) :
+            v0{_v0}, v1{_v1}, v2{_v2}
+        {
+            const Vector3 edgeV0V1 = v1 - v0;
+            const Vector3 edgeV0V2 = v2 - v0;
+            normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
+        }
 
-		Vector3 normal{};
+        Vector3 v0{};
+        Vector3 v1{};
+        Vector3 v2{};
 
-		TriangleCullMode cullMode{};
-		unsigned char materialIndex{};
-	};
+        Vector3 normal{};
 
-	struct TriangleMesh
-	{
-		TriangleMesh() = default;
-		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, TriangleCullMode _cullMode):
-		positions(_positions), indices(_indices), cullMode(_cullMode)
-		{
-			//Calculate Normals
-			CalculateNormals();
+        TriangleCullMode cullMode{};
+        unsigned char materialIndex{};
+    };
 
-			//Update Transforms
-			UpdateTransforms();
-		}
+    struct TriangleMesh
+    {
+        TriangleMesh() = default;
 
-		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
-			positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
-		{
-			UpdateTransforms();
-		}
+        TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices,
+                     TriangleCullMode _cullMode):
+            positions(_positions), indices(_indices), cullMode(_cullMode)
+        {
+            //Calculate Normals
+            CalculateNormals();
 
-		std::vector<Vector3> positions{};
-		std::vector<Vector3> normals{};
-		std::vector<int> indices{};
-		unsigned char materialIndex{};
+            //Update Transforms
+            UpdateTransforms();
+        }
 
-		TriangleCullMode cullMode{TriangleCullMode::BackFaceCulling};
+        TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices,
+                     const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
+            positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
+        {
+            UpdateTransforms();
+        }
 
-		Matrix rotationTransform{};
-		Matrix translationTransform{};
-		Matrix scaleTransform{};
+        std::vector<Vector3> positions{};
+        std::vector<Vector3> normals{};
+        std::vector<int> indices{};
+        unsigned char materialIndex{};
 
-		std::vector<Vector3> transformedPositions{};
-		std::vector<Vector3> transformedNormals{};
+        TriangleCullMode cullMode{TriangleCullMode::BackFaceCulling};
 
-		void Translate(const Vector3& translation)
-		{
-			translationTransform = Matrix::CreateTranslation(translation);
-		}
+        Matrix rotationTransform{};
+        Matrix translationTransform{};
+        Matrix scaleTransform{};
 
-		void RotateY(float yaw)
-		{
-			rotationTransform = Matrix::CreateRotationY(yaw);
-		}
+        std::vector<Vector3> transformedPositions{};
+        std::vector<Vector3> transformedNormals{};
 
-		void Scale(const Vector3& scale)
-		{
-			scaleTransform = Matrix::CreateScale(scale);
-		}
+        void Translate(const Vector3& translation)
+        {
+            translationTransform = Matrix::CreateTranslation(translation);
+        }
 
-		void AppendTriangle(const Triangle& triangle, bool ignoreTransformUpdate = false)
-		{
-			int startIndex = static_cast<int>(positions.size());
+        void RotateY(float yaw)
+        {
+            rotationTransform = Matrix::CreateRotationY(yaw);
+        }
 
-			positions.push_back(triangle.v0);
-			positions.push_back(triangle.v1);
-			positions.push_back(triangle.v2);
+        void Scale(const Vector3& scale)
+        {
+            scaleTransform = Matrix::CreateScale(scale);
+        }
 
-			indices.push_back(startIndex);
-			indices.push_back(++startIndex);
-			indices.push_back(++startIndex);
+        void AppendTriangle(const Triangle& triangle, bool ignoreTransformUpdate = false)
+        {
+            int startIndex = static_cast<int>(positions.size());
 
-			normals.push_back(triangle.normal);
+            positions.push_back(triangle.v0);
+            positions.push_back(triangle.v1);
+            positions.push_back(triangle.v2);
 
-			//Not ideal, but making sure all vertices are updated
-			if(!ignoreTransformUpdate)
-				UpdateTransforms();
-		}
+            indices.push_back(startIndex);
+            indices.push_back(++startIndex);
+            indices.push_back(++startIndex);
 
-		void CalculateNormals()
-		{
-			assert(false && "No Implemented Yet!");
-		}
+            normals.push_back(triangle.normal);
 
-		void UpdateTransforms()
-		{
-			assert(false && "No Implemented Yet!");
-			//Calculate Final Transform 
-			//const auto finalTransform = ...
+            //Not ideal, but making sure all vertices are updated
+            if (!ignoreTransformUpdate)
+                UpdateTransforms();
+        }
 
-			//Transform Positions (positions > transformedPositions)
-			//...
+        void CalculateNormals()
+        {
+            assert(false && "No Implemented Yet!");
+        }
 
-			//Transform Normals (normals > transformedNormals)
-			//...
-		}
-	};
+        void UpdateTransforms()
+        {
+            assert(false && "No Implemented Yet!");
+            //Calculate Final Transform 
+            //const auto finalTransform = ...
+
+            //Transform Positions (positions > transformedPositions)
+            //...
+
+            //Transform Normals (normals > transformedNormals)
+            //...
+        }
+    };
 #pragma endregion
 #pragma region LIGHT
-	enum class LightType
-	{
-		Point,
-		Directional
-	};
+    enum class LightType
+    {
+        Point,
+        Directional
+    };
 
-	struct Light
-	{
-		Vector3 origin{};
-		Vector3 direction{};
-		ColorRGB color{};
-		float intensity{};
+    struct Light
+    {
+        Vector3 origin{};
+        Vector3 direction{};
+        ColorRGB color{};
+        float intensity{};
 
-		LightType type{};
-	};
+        LightType type{};
+    };
 #pragma endregion
 #pragma region MISC
-	struct Ray
-	{
-		Vector3 origin{};
-		Vector3 direction{};
+    struct Ray
+    {
+        Vector3 origin{};
+        Vector3 direction{};
 
-		float min{ 0.0001f };
-		float max{ FLT_MAX };
-	};
+        float min{0.0001f};
+        float max{FLT_MAX};
+    };
 
-	struct HitRecord
-	{
-		Vector3 origin{};
-		Vector3 normal{};
-		float t = FLT_MAX;
+    struct HitRecord
+    {
+        Vector3 origin{};
+        Vector3 normal{};
+        float t = FLT_MAX;
 
-		bool didHit{ false };
-		unsigned char materialIndex{ 0 };
-	};
+        bool didHit{false};
+        unsigned char materialIndex{0};
+    };
 #pragma endregion
 }

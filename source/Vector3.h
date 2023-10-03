@@ -5,59 +5,59 @@
 
 namespace dae
 {
-	struct Vector4;
-	struct Vector3
-	{
-		float x{};
-		float y{};
-		float z{};
+    struct Vector4;
 
-		Vector3() = default;
-		Vector3(float _x, float _y, float _z);
-		Vector3(const Vector3& from, const Vector3& to);
-		Vector3(const Vector4& v);
+    struct Vector3
+    {
+        float x{};
+        float y{};
+        float z{};
 
-		float Magnitude() const;
-		float SqrMagnitude() const;
-		float Normalize();
-		Vector3 Normalized() const;
+        Vector3() = default;
+        Vector3(float _x, float _y, float _z);
+        Vector3(const Vector3& from, const Vector3& to);
+        Vector3(const Vector4& v);
 
-		static float Dot(const Vector3& v1, const Vector3& v2);
-		static Vector3 Cross(const Vector3& v1, const Vector3& v2);
-		static Vector3 Project(const Vector3& v1, const Vector3& v2);
-		static Vector3 Reject(const Vector3& v1, const Vector3& v2);
-		static Vector3 Reflect(const Vector3& v1, const Vector3& v2);
-		static Vector3 Lico(float f1, const Vector3& v1, float f2, const Vector3& v2, float f3, const Vector3& v3);
+        float Magnitude() const;
+        float SqrMagnitude() const;
+        float Normalize();
+        Vector3 Normalized() const;
 
-		Vector4 ToPoint4() const;
-		Vector4 ToVector4() const;
+        static float Dot(const Vector3& v1, const Vector3& v2);
+        static Vector3 Cross(const Vector3& v1, const Vector3& v2);
+        static Vector3 Project(const Vector3& v1, const Vector3& v2);
+        static Vector3 Reject(const Vector3& v1, const Vector3& v2);
+        static Vector3 Reflect(const Vector3& v1, const Vector3& v2);
+        static Vector3 Lico(float f1, const Vector3& v1, float f2, const Vector3& v2, float f3, const Vector3& v3);
 
-		//Member Operators
-		Vector3 operator*(float scale) const;
-		Vector3 operator/(float scale) const;
-		Vector3 operator+(const Vector3& v) const;
-		Vector3 operator-(const Vector3& v) const;
-		Vector3 operator-() const;
-		//Vector3& operator-();
-		Vector3& operator+=(const Vector3& v);
-		Vector3& operator-=(const Vector3& v);
-		Vector3& operator/=(float scale);
-		Vector3& operator*=(float scale);
-		float& operator[](int index);
-		float operator[](int index) const;
+        Vector4 ToPoint4() const;
+        Vector4 ToVector4() const;
 
-		static const Vector3 UnitX;
-		static const Vector3 UnitY;
-		static const Vector3 UnitZ;
-		static const Vector3 Zero;
+        //Member Operators
+        Vector3 operator*(float scale) const;
+        Vector3 operator/(float scale) const;
+        Vector3 operator+(const Vector3& v) const;
+        Vector3 operator-(const Vector3& v) const;
+        Vector3 operator-() const;
+        //Vector3& operator-();
+        Vector3& operator+=(const Vector3& v);
+        Vector3& operator-=(const Vector3& v);
+        Vector3& operator/=(float scale);
+        Vector3& operator*=(float scale);
+        float& operator[](int index);
+        float operator[](int index) const;
 
-		friend std::ostream& operator<<(std::ostream& os, const Vector3& v);
-	};
+        static const Vector3 UnitX;
+        static const Vector3 UnitY;
+        static const Vector3 UnitZ;
+        static const Vector3 Zero;
 
-	//Global Operators
-	inline Vector3 operator*(float scale, const Vector3& v)
-	{
-		return { v.x * scale, v.y * scale, v.z * scale };
-	}
+        friend std::ostream& operator<<(std::ostream& os, const Vector3& v);
+    };
 
+    //Global Operators
+    inline Vector3 operator*(float scale, const Vector3& v)
+    {
+        return {v.x * scale, v.y * scale, v.z * scale};
+    }
 }

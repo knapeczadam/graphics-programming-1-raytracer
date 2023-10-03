@@ -12,109 +12,110 @@
 
 using namespace dae;
 
-Renderer::Renderer(SDL_Window * pWindow) :
-	m_pWindow(pWindow),
-	m_pBuffer(SDL_GetWindowSurface(pWindow))
+Renderer::Renderer(SDL_Window* pWindow) :
+    m_pWindow(pWindow),
+    m_pBuffer(SDL_GetWindowSurface(pWindow))
 {
-	//Initialize
-	SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
-	m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
+    //Initialize
+    SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
+    m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
 }
 
 void Renderer::Render(Scene* pScene) const
 {
-	Camera& camera = pScene->GetCamera();
-	auto& materials = pScene->GetMaterials();
-	auto& lights = pScene->GetLights();
-	const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
-	//std::cout << cameraToWorld << std::endl;
-	const float aspectRatio{ static_cast<float>(m_Width) / static_cast<float>(m_Height) };
-	Vector3 rayDirection;
-	for (int px{}; px < m_Width; ++px)
-	{
-		for (int py{}; py < m_Height; ++py)
-		{
-			/*
-			float gradient = px / m_fWidth;
-			gradient += py / m_fWidth;
-			gradient /= 2.0f;
-			*/
+    Camera& camera = pScene->GetCamera();
+    auto& materials = pScene->GetMaterials();
+    auto& lights = pScene->GetLights();
+    const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
+    //std::cout << cameraToWorld << std::endl;
+    const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+    Vector3 rayDirection;
+    for (int px{}; px < m_Width; ++px)
+    {
+        for (int py{}; py < m_Height; ++py)
+        {
+            /*
+            float gradient = px / m_fWidth;
+            gradient += py / m_fWidth;
+            gradient /= 2.0f;
+            */
 
-			// + 0.5f: we need the middle of a pixel
-			// rayDirection between almost -1 and 1
-			const float rayDirectionX { (static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f };
-			const float rayDirectionY{ 1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f };
-			const float FOV{CalculateFOV(camera.fovAngle)};
-			rayDirection.x = rayDirectionX * aspectRatio * FOV;
-			rayDirection.y = rayDirectionY * FOV;
-			rayDirection.z = 1.0f;
-			rayDirection = cameraToWorld.TransformVector(rayDirection);
-			//rayDirection = Matrix::CreateRotation(0.0f,camera.totalPitch * TO_RADIANS,  camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
-			//rayDirection = Matrix::CreateRotationX(camera.totalPitch * TO_RADIANS).TransformVector(rayDirection);
-			//rayDirection = Matrix::CreateRotationY(camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
-			rayDirection.Normalize();
+            // + 0.5f: we need the middle of a pixel
+            // rayDirection between almost -1 and 1
+            const float rayDirectionX{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+            const float rayDirectionY{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+            const float FOV{CalculateFOV(camera.fovAngle)};
+            rayDirection.x = rayDirectionX * aspectRatio * FOV;
+            rayDirection.y = rayDirectionY * FOV;
+            rayDirection.z = 1.0f;
+            rayDirection = cameraToWorld.TransformVector(rayDirection);
+            //rayDirection = Matrix::CreateRotation(0.0f,camera.totalPitch * TO_RADIANS,  camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
+            //rayDirection = Matrix::CreateRotationX(camera.totalPitch * TO_RADIANS).TransformVector(rayDirection);
+            //rayDirection = Matrix::CreateRotationY(camera.totalYaw * TO_RADIANS).TransformVector(rayDirection);
+            rayDirection.Normalize();
 
-			Ray viewRay{ camera.origin, rayDirection };
-			Sphere testSphere{ {0.0f, 0.0f, 100.0f}, 50.0f , 0 };
-			Plane testPlane{ {0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0 };
+            Ray viewRay{camera.origin, rayDirection};
+            Sphere testSphere{{0.0f, 0.0f, 100.0f}, 50.0f, 0};
+            Plane testPlane{{0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0};
 
-			HitRecord closestHit{};
+            HitRecord closestHit{};
 
-			//GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
-			//GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
-			pScene->GetClosestHit(viewRay, closestHit);
+            //GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+            //GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
+            pScene->GetClosestHit(viewRay, closestHit);
 
-            ColorRGB finalColor{ 0, 0, 0 };
-			if (closestHit.didHit)
-			{
-				finalColor = materials[closestHit.materialIndex]->Shade();
-				 //finalColor = materials[closestHit.materialIndex]->Shade() * closestHit.t;
-				 //const float scaled_t{ (closestHit.t - 50.0f) / 40.0f };
-				 //finalColor = { scaled_t, scaled_t, scaled_t };
+            ColorRGB finalColor{0, 0, 0};
+            if (closestHit.didHit)
+            {
+                finalColor = materials[closestHit.materialIndex]->Shade();
+                //finalColor = materials[closestHit.materialIndex]->Shade() * closestHit.t;
+                //const float scaled_t{ (closestHit.t - 50.0f) / 40.0f };
+                //finalColor = { scaled_t, scaled_t, scaled_t };
 
-				//const float scaled_t = closestHit.t / 500.0f;
-				//finalColor = { scaled_t, scaled_t, scaled_t };
-				if (camera.toggleShadow)
-				{
-					 for (const auto& light : lights)
-					 {
-						  closestHit.origin += closestHit.normal * 0.001f;
-						  const Vector3 dirToLight{LightUtils::GetDirectionToLight(light,closestHit.origin)};
-						  const float lightDistance{dirToLight.Magnitude()};
-						  Ray shadowRay{ closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance };
-						  if (pScene->DoesHit(shadowRay))
-						  {
-							  finalColor *= 0.5f;
-						  }
-					 }
-				}
-			}
+                //const float scaled_t = closestHit.t / 500.0f;
+                //finalColor = { scaled_t, scaled_t, scaled_t };
+                if (camera.toggleShadow)
+                {
+                    for (const auto& light : lights)
+                    {
+                        closestHit.origin += closestHit.normal * 0.001f;
+                        const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                        const float lightDistance{dirToLight.Magnitude()};
+                        Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        if (pScene->DoesHit(shadowRay))
+                        {
+                            finalColor *= 0.5f;
+                        }
+                    }
+                }
+            }
 
-			// Test rayDirection's colors
-			//ColorRGB finalColor{ rayDirection.x, rayDirection.y , rayDirection.z };
+            // Test rayDirection's colors
+            //ColorRGB finalColor{ rayDirection.x, rayDirection.y , rayDirection.z };
 
-			//Update Color in Buffer
-			finalColor.MaxToOne();
+            //Update Color in Buffer
+            finalColor.MaxToOne();
 
-			m_pBufferPixels[static_cast<uint32_t>(px) + (static_cast<uint32_t>(py) * m_Width)] = SDL_MapRGB(m_pBuffer->format,
-				static_cast<uint8_t>(finalColor.r * 255),
-				static_cast<uint8_t>(finalColor.g * 255),
-				static_cast<uint8_t>(finalColor.b * 255));
-		}
-	}
+            m_pBufferPixels[static_cast<uint32_t>(px) + (static_cast<uint32_t>(py) * m_Width)] = SDL_MapRGB(
+                m_pBuffer->format,
+                static_cast<uint8_t>(finalColor.r * 255),
+                static_cast<uint8_t>(finalColor.g * 255),
+                static_cast<uint8_t>(finalColor.b * 255));
+        }
+    }
 
-	//@END
-	//Update SDL Surface
-	SDL_UpdateWindowSurface(m_pWindow);
+    //@END
+    //Update SDL Surface
+    SDL_UpdateWindowSurface(m_pWindow);
 }
 
 bool Renderer::SaveBufferToImage() const
 {
-	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
+    return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
 }
 
 float Renderer::CalculateFOV(float angle) const
 {
-	const float halfAlpha{ (angle / 2.0f) * TO_RADIANS };
-	return std::tanf(halfAlpha);
+    const float halfAlpha{(angle / 2.0f) * TO_RADIANS};
+    return std::tanf(halfAlpha);
 }

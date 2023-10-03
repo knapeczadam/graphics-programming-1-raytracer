@@ -17,119 +17,119 @@ using namespace dae;
 
 void ShutDown(SDL_Window* pWindow)
 {
-	SDL_DestroyWindow(pWindow);
-	SDL_Quit();
+    SDL_DestroyWindow(pWindow);
+    SDL_Quit();
 }
 
 void DoVectorTests()
 {
-	// Dot product
-	float dotResult{};
-	dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
-	std::cout << "(1) Same direction: " << dotResult << '\n';
-	dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
-	std::cout << "(-1) Opposite direction: " << dotResult << '\n';
-	dotResult =  Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
-	std::cout << "(0) Perpendicular: " << dotResult << '\n';
+    // Dot product
+    float dotResult{};
+    dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitX);
+    std::cout << "(1) Same direction: " << dotResult << '\n';
+    dotResult = Vector3::Dot(Vector3::UnitX, -Vector3::UnitX);
+    std::cout << "(-1) Opposite direction: " << dotResult << '\n';
+    dotResult = Vector3::Dot(Vector3::UnitX, Vector3::UnitY);
+    std::cout << "(0) Perpendicular: " << dotResult << '\n';
 
-	// Cross product
-	Vector3 crossResult{}; // Left-Handed!
-	crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
-	std::cout << crossResult << '\n';
-	crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
-	std::cout << crossResult << '\n';
+    // Cross product
+    Vector3 crossResult{}; // Left-Handed!
+    crossResult = Vector3::Cross(Vector3::UnitZ, Vector3::UnitX);
+    std::cout << crossResult << '\n';
+    crossResult = Vector3::Cross(Vector3::UnitX, Vector3::UnitZ);
+    std::cout << crossResult << '\n';
 }
 
 int main(int argc, char* args[])
 {
-	//Unreferenced parameters
-	(void)argc;
-	(void)args;
+    //Unreferenced parameters
+    (void)argc;
+    (void)args;
 
-	// Test cases
-	// DoVectorTests();
+    // Test cases
+    // DoVectorTests();
 
-	//Create window + surfaces
-	SDL_Init(SDL_INIT_VIDEO);
+    //Create window + surfaces
+    SDL_Init(SDL_INIT_VIDEO);
 
-	const uint32_t width = 640;
-	const uint32_t height = 480;
+    const uint32_t width = 640;
+    const uint32_t height = 480;
 
-	SDL_Window* pWindow = SDL_CreateWindow(
-		"RayTracer - **Insert Name**",
-		SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED,
-		width, height, 0);
+    SDL_Window* pWindow = SDL_CreateWindow(
+        "RayTracer - **Insert Name**",
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        width, height, 0);
 
-	if (!pWindow)
-		return 1;
+    if (!pWindow)
+        return 1;
 
-	//Initialize "framework"
-	const auto pTimer = new Timer();
-	const auto pRenderer = new Renderer(pWindow);
+    //Initialize "framework"
+    const auto pTimer = new Timer();
+    const auto pRenderer = new Renderer(pWindow);
 
-	const auto pScene = new Scene_W3();
-	pScene->Initialize();
+    const auto pScene = new Scene_W3();
+    pScene->Initialize();
 
-	//Start loop
-	pTimer->Start();
+    //Start loop
+    pTimer->Start();
 
-	// Start Benchmark
-	// pTimer->StartBenchmark();
+    // Start Benchmark
+    // pTimer->StartBenchmark();
 
-	float printTimer = 0.f;
-	bool isLooping = true;
-	bool takeScreenshot = false;
-	while (isLooping)
-	{
-		//--------- Get input events ---------
-		SDL_Event e;
-		while (SDL_PollEvent(&e))
-		{
-			switch (e.type)
-			{
-			case SDL_QUIT:
-				isLooping = false;
-				break;
-			case SDL_KEYUP:
-				if(e.key.keysym.scancode == SDL_SCANCODE_X)
-					takeScreenshot = true;
-				break;
-			}
-		}
+    float printTimer = 0.f;
+    bool isLooping = true;
+    bool takeScreenshot = false;
+    while (isLooping)
+    {
+        //--------- Get input events ---------
+        SDL_Event e;
+        while (SDL_PollEvent(&e))
+        {
+            switch (e.type)
+            {
+            case SDL_QUIT:
+                isLooping = false;
+                break;
+            case SDL_KEYUP:
+                if (e.key.keysym.scancode == SDL_SCANCODE_X)
+                    takeScreenshot = true;
+                break;
+            }
+        }
 
-		//--------- Update ---------
-		pScene->Update(pTimer);
+        //--------- Update ---------
+        pScene->Update(pTimer);
 
-		//--------- Render ---------
-		pRenderer->Render(pScene);
+        //--------- Render ---------
+        pRenderer->Render(pScene);
 
-		//--------- Timer ---------
-		pTimer->Update();
-		printTimer += pTimer->GetElapsed();
-		if (printTimer >= 1.f)
-		{
-			printTimer = 0.f;
-			std::cout << "dFPS: " << pTimer->GetdFPS() << std::endl;
-		}
+        //--------- Timer ---------
+        pTimer->Update();
+        printTimer += pTimer->GetElapsed();
+        if (printTimer >= 1.f)
+        {
+            printTimer = 0.f;
+            std::cout << "dFPS: " << pTimer->GetdFPS() << std::endl;
+        }
 
-		//Save screenshot after full render
-		if (takeScreenshot)
-		{
-			if (!pRenderer->SaveBufferToImage())
-				std::cout << "Screenshot saved!" << std::endl;
-			else
-				std::cout << "Something went wrong. Screenshot not saved!" << std::endl;
-			takeScreenshot = false;
-		}
-	}
-	pTimer->Stop();
+        //Save screenshot after full render
+        if (takeScreenshot)
+        {
+            if (!pRenderer->SaveBufferToImage())
+                std::cout << "Screenshot saved!" << std::endl;
+            else
+                std::cout << "Something went wrong. Screenshot not saved!" << std::endl;
+            takeScreenshot = false;
+        }
+    }
+    pTimer->Stop();
 
-	//Shutdown "framework"
-	delete pScene;
-	delete pRenderer;
-	delete pTimer;
+    //Shutdown "framework"
+    delete pScene;
+    delete pRenderer;
+    delete pTimer;
 
-	ShutDown(pWindow);
-	return 0;
+    ShutDown(pWindow);
+    return 0;
 }
