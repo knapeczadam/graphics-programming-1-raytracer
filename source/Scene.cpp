@@ -28,6 +28,12 @@ namespace dae
 
     void dae::Scene::GetClosestHit(const Ray& ray, HitRecord& closestHit) const
     {
+        GetClosestHitSphere(ray, closestHit);
+        GetClosestHitPlane(ray, closestHit);
+    }
+
+    void Scene::GetClosestHitSphere(const Ray& ray, HitRecord& closestHit) const
+    {
         for (const auto& sphere : m_SphereGeometries)
         {
             HitRecord hit;
@@ -43,7 +49,10 @@ namespace dae
                 }
             }
         }
+    }
 
+    void Scene::GetClosestHitPlane(const Ray& ray, HitRecord& closestHit) const
+    {
         for (const auto& plane : m_PlaneGeometries)
         {
             HitRecord hit;
