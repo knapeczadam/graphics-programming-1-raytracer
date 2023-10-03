@@ -72,5 +72,8 @@
     <ClCompile Include="Timer.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
