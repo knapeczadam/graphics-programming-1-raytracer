@@ -61,8 +61,7 @@ namespace dae
 
         ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
         {
-            //todo: W3
-            return {};
+            return BRDF::Lambert(m_DiffuseReflectance, m_DiffuseColor);
         }
 
     private:
@@ -86,7 +85,6 @@ namespace dae
         ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
         {
             //todo: W3
-            assert(false && "Not Implemented Yet");
             return {};
         }
 

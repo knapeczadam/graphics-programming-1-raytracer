@@ -587,7 +587,7 @@ namespace dae
 #pragma region Week 3
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
-        switch (W3_Todo::Todo4)
+        switch (W3_Todo::Todo6)
         {
         case W3_Todo::Todo1:
             RenderScene_W3_Todo1(pScene);
@@ -799,6 +799,72 @@ namespace dae
 
     void Renderer::RenderScene_W3_Todo6(Scene* pScene) const
     {
+        Camera& camera = pScene->GetCamera();
+        const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
+        const float FOV{camera.GetFOV()};
+        const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+        auto& materials = pScene->GetMaterials();
+        Vector3 rayDirection;
+        auto& lights = pScene->GetLights();
+        for (int px{}; px < m_Width; ++px)
+        {
+            for (int py{}; py < m_Height; ++py)
+            {
+                const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                rayDirection.x = rx * aspectRatio * FOV;
+                rayDirection.y = ry * FOV;
+                rayDirection.z = 1.0f;
+                rayDirection = cameraToWorld.TransformVector(rayDirection);
+                rayDirection.Normalize();
+
+                Ray viewRay{camera.origin, rayDirection};
+
+                HitRecord closestHit{};
+                pScene->GetClosestHit(viewRay, closestHit);
+
+                ColorRGB finalColor{};
+                if (closestHit.didHit)
+                {
+                    for (const auto& light : lights)
+                    {
+                        closestHit.origin += closestHit.normal * 0.001f;
+                        const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                        const float lightDistance{dirToLight.Magnitude()};
+                        const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        switch (m_CurrentLightingMode)
+                        {
+                        case LightingMode::ObservedArea:
+                            if (observedArea < 0) continue;
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += ColorRGB{observedArea, observedArea, observedArea};
+                            break;
+                        case LightingMode::Radiance:
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+                            break;
+                        case LightingMode::BRDF:
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += materials[closestHit.materialIndex]->Shade(
+                                closestHit, dirToLightNormalized, rayDirection);
+                            break;
+                        case LightingMode::Combined:
+                            if (observedArea < 0) continue;
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += LightUtils::GetRadiance(light, closestHit.origin) * materials[closestHit.
+                                materialIndex]->Shade(closestHit, dirToLightNormalized, rayDirection) * observedArea;
+                            break;
+                        }
+                    }
+                }
+                UpdateColor(finalColor, px, py);
+            }
+        }
+        //@END
+        //Update SDL Surface
+        SDL_UpdateWindowSurface(m_pWindow);
     }
 
     void Renderer::RenderScene_W3_Todo7(Scene* pScene) const
