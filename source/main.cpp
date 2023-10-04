@@ -98,6 +98,8 @@ int main(int argc, char* args[])
                     pRenderer->ToggleShadow();
                 if (e.key.keysym.scancode == SDL_SCANCODE_F3)
                     pRenderer->SwitchLightingMode();
+                if (e.key.keysym.scancode == SDL_SCANCODE_F6)
+                    pTimer->StartBenchmark();
                 break;
             }
         }
