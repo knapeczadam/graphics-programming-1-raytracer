@@ -27,7 +27,6 @@ namespace dae
         void SwitchLightingMode();
 
     private:
-        
         void RenderScene_W1(Scene* pScene) const;
         void RenderScene_W1_Todo2(Scene* pScene) const;
         void RenderScene_W1_Todo3(Scene* pScene) const;
@@ -62,10 +61,10 @@ namespace dae
     private:
         enum class LightingMode
         {
-            ObservedArea,
-            Radiance,
-            BRDF,
-            Combined
+            ObservedArea, // Lambert Cosine Law
+            Radiance, // Incident Radiance
+            BRDF, // Scattering of the light
+            Combined // Observes Area * Radiance * BRDF
         };
 
         enum class W1_Todo
@@ -111,8 +110,8 @@ namespace dae
 
         int m_Width{};
         int m_Height{};
-        
-        LightingMode m_CurrentLightingMode{LightingMode::ObservedArea};
+
+        LightingMode m_CurrentLightingMode{LightingMode::Combined};
         bool m_ShadowsEnabled{true};
     };
 }

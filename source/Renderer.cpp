@@ -49,8 +49,8 @@ namespace dae
 
     void Renderer::SwitchLightingMode()
     {
-        m_CurrentLightingMode = static_cast<LightingMode>((static_cast<int>(m_CurrentLightingMode) + 1) % static_cast<
-            int>(LightingMode::Combined));
+        m_CurrentLightingMode = static_cast<LightingMode>((static_cast<int>(m_CurrentLightingMode) + 1) % (static_cast<
+            int>(LightingMode::Combined) + 1));
         std::cout << "LIGHTING MODE: ";
         switch (m_CurrentLightingMode)
         {
