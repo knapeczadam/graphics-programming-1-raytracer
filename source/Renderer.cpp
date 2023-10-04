@@ -587,13 +587,16 @@ namespace dae
 #pragma region Week 3
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
-        switch (W3_Todo::Todo1)
+        switch (W3_Todo::Todo3_1)
         {
         case W3_Todo::Todo1:
             RenderScene_W3_Todo1(pScene);
             break;
-        case W3_Todo::Todo3:
-            RenderScene_W3_Todo3(pScene);
+        case W3_Todo::Todo3_1:
+            RenderScene_W3_Todo3_1(pScene);
+            break;
+        case W3_Todo::Todo3_2:
+            RenderScene_W3_Todo3_2(pScene);
             break;
         case W3_Todo::Todo4:
             RenderScene_W3_Todo4(pScene);
@@ -672,7 +675,65 @@ namespace dae
         SDL_UpdateWindowSurface(m_pWindow);
     }
 
-    void Renderer::RenderScene_W3_Todo3(Scene* pScene) const
+    void Renderer::RenderScene_W3_Todo3_1(Scene* pScene) const
+    {
+        Camera& camera = pScene->GetCamera();
+        const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
+        const float FOV{camera.GetFOV()};
+        const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+        Vector3 rayDirection;
+        auto& lights = pScene->GetLights();
+        for (int px{}; px < m_Width; ++px)
+        {
+            for (int py{}; py < m_Height; ++py)
+            {
+                const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                rayDirection.x = rx * aspectRatio * FOV;
+                rayDirection.y = ry * FOV;
+                rayDirection.z = 1.0f;
+                rayDirection = cameraToWorld.TransformVector(rayDirection);
+                rayDirection.Normalize();
+
+                Ray viewRay{camera.origin, rayDirection};
+
+                HitRecord closestHit{};
+                pScene->GetClosestHit(viewRay, closestHit);
+
+                ColorRGB finalColor{};
+                if (closestHit.didHit)
+                {
+                    for (const auto& light : lights)
+                    {
+                        closestHit.origin += closestHit.normal * 0.001f;
+                        const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                        const float lightDistance{dirToLight.Magnitude()};
+                        const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        switch (m_CurrentLightingMode)
+                        {
+                        case LightingMode::ObservedArea:
+                            if (observedArea < 0) continue;
+                            finalColor += ColorRGB{observedArea, observedArea, observedArea};
+                            break;
+                        case LightingMode::Radiance:
+                            break;
+                        case LightingMode::BRDF:
+                            break;
+                        case LightingMode::Combined:
+                            break;
+                        }
+                    }
+                }
+                UpdateColor(finalColor, px, py);
+            }
+        }
+        //@END
+        //Update SDL Surface
+        SDL_UpdateWindowSurface(m_pWindow);
+    }
+
+    void Renderer::RenderScene_W3_Todo3_2(Scene* pScene) const
     {
     }
 
