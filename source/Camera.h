@@ -19,13 +19,6 @@ namespace dae
         {
         }
 
-        enum class Lighting
-        {
-            OBSERVED_AREA,
-            RADIANCE,
-            BRDF,
-            COMBINED
-        };
 
         Matrix CalculateCameraToWorld();
         void Update(Timer* pTimer);
@@ -38,14 +31,12 @@ namespace dae
 
     public:
         Vector3 origin{};
-        bool toggleShadow{true};
         float fovAngle{90.f};
         Vector3 forward{Vector3::UnitZ};
         Vector3 up{Vector3::UnitY};
         Vector3 right{Vector3::UnitX};
 
     private:
-        Lighting lighting{Lighting::COMBINED};
         float totalPitch{0.f};
         float totalYaw{0.f};
         Matrix cameraToWorld{};

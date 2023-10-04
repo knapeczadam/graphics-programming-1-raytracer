@@ -42,6 +42,42 @@ namespace dae
         return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
     }
 
+    void Renderer::Test() const
+    {
+        SDL_Event event;
+        SDL_PollEvent(&event);
+        switch (event.type)
+        {
+        case SDL_KEYUP:
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_F2:
+                m_ShadowsEnabled = not m_ShadowsEnabled;
+                break;
+            case SDLK_F3:
+                m_CurrentLightingMode = static_cast<LightingMode>((static_cast<int>(m_CurrentLightingMode) + 1) %
+                    4);
+                std::cout << "LIGHTING MODE: ";
+                switch (m_CurrentLightingMode)
+                {
+                case LightingMode::ObservedArea:
+                    std::cout << "OBSERVED_AREA" << std::endl;
+                    break;
+                case LightingMode::Radiance:
+                    std::cout << "RADIANCE" << std::endl;
+                    break;
+                case LightingMode::BRDF:
+                    std::cout << "BRDF" << std::endl;
+                    break;
+                case LightingMode::Combined:
+                    std::cout << "COMBINED" << std::endl;
+                    break;
+                }
+                break;
+            }
+        }
+    }
+
     void Renderer::UpdateColor(ColorRGB& finalColor, int px, int py) const
     {
         //Update Color in Buffer
@@ -55,17 +91,6 @@ namespace dae
     }
 
 #pragma region Week 1
-    enum class W1_Todo
-    {
-        Todo2,
-        Todo3,
-        Todo4,
-        Todo5,
-        Todo6,
-        Todo7,
-        Todo8
-    };
-
     void Renderer::RenderScene_W1(Scene* pScene) const
     {
         switch (W1_Todo::Todo8)
@@ -310,16 +335,6 @@ namespace dae
 #pragma endregion
 
 #pragma region Week 2
-    enum class W2_Todo
-    {
-        Todo1_1,
-        Todo1_2,
-        Todo2,
-        Todo4_1,
-        Todo4_2,
-        Todo5
-    };
-
     void Renderer::RenderScene_W2(Scene* pScene) const
     {
         switch (W2_Todo::Todo5)
@@ -579,24 +594,9 @@ namespace dae
 #pragma endregion
 
 #pragma region Week 3
-    enum class W3_Todo
-    {
-        Todo1,
-        Todo2,
-        Todo3,
-        Todo4,
-        Todo6,
-        Todo7,
-        Todo9,
-        Todo10,
-        Todo11,
-        Todo12,
-        Todo13
-    };
-
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
-        switch (W3_Todo::Todo1)
+        switch (W3_Todo::Todo2)
         {
         case W3_Todo::Todo1:
             RenderScene_W3_Todo1(pScene);
@@ -686,6 +686,7 @@ namespace dae
 
     void Renderer::RenderScene_W3_Todo2(Scene* pScene) const
     {
+        Test();
     }
 
     void Renderer::RenderScene_W3_Todo3(Scene* pScene) const
