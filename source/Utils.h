@@ -56,8 +56,6 @@ namespace dae
                                   bool ignoreHitRecord = false)
         {
             const float denom{Vector3::Dot(plane.normal, ray.direction)};
-            //if (denom < 0.0f)
-            //if (true)
             {
                 const float t{Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom};
                 if (t > ray.max or t < ray.min) return false;
@@ -122,9 +120,16 @@ namespace dae
 
         inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
         {
-            //todo W3
-            assert(false && "No Implemented Yet!");
-            return {};
+            ColorRGB radiance;
+            switch (light.type)
+            {
+            case LightType::Point:
+                    radiance = light.color * (light.intensity / (light.origin - target).SqrMagnitude()); 
+                    break;
+            case LightType::Directional:
+                    break;
+            }
+            return radiance;
         }
     }
 

@@ -46,8 +46,7 @@ namespace dae
 
         void RenderScene_W3(Scene* pScene) const;
         void RenderScene_W3_Todo1(Scene* pScene) const;
-        void RenderScene_W3_Todo3_1(Scene* pScene) const;
-        void RenderScene_W3_Todo3_2(Scene* pScene) const;
+        void RenderScene_W3_Todo3(Scene* pScene) const;
         void RenderScene_W3_Todo4(Scene* pScene) const;
         void RenderScene_W3_Todo6(Scene* pScene) const;
         void RenderScene_W3_Todo7(Scene* pScene) const;
@@ -92,8 +91,7 @@ namespace dae
         enum class W3_Todo
         {
             Todo1,
-            Todo3_1,
-            Todo3_2,
+            Todo3,
             Todo4,
             Todo6,
             Todo7,
