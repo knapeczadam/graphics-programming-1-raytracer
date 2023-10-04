@@ -782,6 +782,9 @@ namespace dae
                         case LightingMode::BRDF:
                             break;
                         case LightingMode::Combined:
+                            if (observedArea < 0) continue;
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += LightUtils::GetRadiance(light, closestHit.origin) * observedArea;
                             break;
                         }
                     }
