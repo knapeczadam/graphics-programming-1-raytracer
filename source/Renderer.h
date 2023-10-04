@@ -23,9 +23,10 @@ namespace dae
 
         void Render(Scene* pScene) const;
         bool SaveBufferToImage() const;
+        void ToggleShadow();
+        void SwitchLightingMode();
 
     private:
-        void Test() const;
         
         void RenderScene_W1(Scene* pScene) const;
         void RenderScene_W1_Todo2(Scene* pScene) const;
@@ -46,7 +47,6 @@ namespace dae
 
         void RenderScene_W3(Scene* pScene) const;
         void RenderScene_W3_Todo1(Scene* pScene) const;
-        void RenderScene_W3_Todo2(Scene* pScene) const;
         void RenderScene_W3_Todo3(Scene* pScene) const;
         void RenderScene_W3_Todo4(Scene* pScene) const;
         void RenderScene_W3_Todo6(Scene* pScene) const;
@@ -92,7 +92,6 @@ namespace dae
         enum class W3_Todo
         {
             Todo1,
-            Todo2,
             Todo3,
             Todo4,
             Todo6,
@@ -113,7 +112,7 @@ namespace dae
         int m_Width{};
         int m_Height{};
         
-        mutable LightingMode m_CurrentLightingMode{LightingMode::ObservedArea};
-        mutable bool m_ShadowsEnabled{true};
+        LightingMode m_CurrentLightingMode{LightingMode::ObservedArea};
+        bool m_ShadowsEnabled{true};
     };
 }

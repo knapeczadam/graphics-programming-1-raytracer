@@ -42,39 +42,30 @@ namespace dae
         return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
     }
 
-    void Renderer::Test() const
+    void Renderer::ToggleShadow()
     {
-        SDL_Event event;
-        SDL_PollEvent(&event);
-        switch (event.type)
+        m_ShadowsEnabled = not m_ShadowsEnabled;
+    }
+
+    void Renderer::SwitchLightingMode()
+    {
+        m_CurrentLightingMode = static_cast<LightingMode>((static_cast<int>(m_CurrentLightingMode) + 1) % static_cast<
+            int>(LightingMode::Combined));
+        std::cout << "LIGHTING MODE: ";
+        switch (m_CurrentLightingMode)
         {
-        case SDL_KEYUP:
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_F2:
-                m_ShadowsEnabled = not m_ShadowsEnabled;
-                break;
-            case SDLK_F3:
-                m_CurrentLightingMode = static_cast<LightingMode>((static_cast<int>(m_CurrentLightingMode) + 1) %
-                    4);
-                std::cout << "LIGHTING MODE: ";
-                switch (m_CurrentLightingMode)
-                {
-                case LightingMode::ObservedArea:
-                    std::cout << "OBSERVED_AREA" << std::endl;
-                    break;
-                case LightingMode::Radiance:
-                    std::cout << "RADIANCE" << std::endl;
-                    break;
-                case LightingMode::BRDF:
-                    std::cout << "BRDF" << std::endl;
-                    break;
-                case LightingMode::Combined:
-                    std::cout << "COMBINED" << std::endl;
-                    break;
-                }
-                break;
-            }
+        case LightingMode::ObservedArea:
+            std::cout << "OBSERVED_AREA" << std::endl;
+            break;
+        case LightingMode::Radiance:
+            std::cout << "RADIANCE" << std::endl;
+            break;
+        case LightingMode::BRDF:
+            std::cout << "BRDF" << std::endl;
+            break;
+        case LightingMode::Combined:
+            std::cout << "COMBINED" << std::endl;
+            break;
         }
     }
 
@@ -337,7 +328,7 @@ namespace dae
 #pragma region Week 2
     void Renderer::RenderScene_W2(Scene* pScene) const
     {
-        switch (W2_Todo::Todo5)
+        switch (W2_Todo::Todo2)
         {
         case W2_Todo::Todo1_1:
             RenderScene_W2_Todo1_1(pScene);
@@ -596,13 +587,10 @@ namespace dae
 #pragma region Week 3
     void Renderer::RenderScene_W3(Scene* pScene) const
     {
-        switch (W3_Todo::Todo2)
+        switch (W3_Todo::Todo1)
         {
         case W3_Todo::Todo1:
             RenderScene_W3_Todo1(pScene);
-            break;
-        case W3_Todo::Todo2:
-            RenderScene_W3_Todo2(pScene);
             break;
         case W3_Todo::Todo3:
             RenderScene_W3_Todo3(pScene);
@@ -682,11 +670,6 @@ namespace dae
         //@END
         //Update SDL Surface
         SDL_UpdateWindowSurface(m_pWindow);
-    }
-
-    void Renderer::RenderScene_W3_Todo2(Scene* pScene) const
-    {
-        Test();
     }
 
     void Renderer::RenderScene_W3_Todo3(Scene* pScene) const
