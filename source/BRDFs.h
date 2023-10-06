@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cassert>
 #include "Math.h"
 
@@ -32,9 +33,9 @@ namespace dae
          */
         static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
         {
-            //todo: W3
-            assert(false && "Not Implemented Yet");
-            return {};
+            const Vector3 r = Vector3::Reflect(l, n);
+            const float cosAlpha = std::max(0.0f, Vector3::Dot(r, v));
+            return ColorRGB{1.0f, 1.0f, 1.0f} * ks * std::powf(cosAlpha, exp);
         }
 
         /**

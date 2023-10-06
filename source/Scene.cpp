@@ -37,7 +37,7 @@ namespace dae
         for (const auto& sphere : m_SphereGeometries)
         {
             HitRecord hit;
-            if (dae::GeometryUtils::HitTest_Sphere(sphere, ray, hit))
+            if (GeometryUtils::HitTest_Sphere(sphere, ray, hit))
             {
                 closestHit.didHit = true;
                 if (hit.t < closestHit.t)
@@ -56,7 +56,7 @@ namespace dae
         for (const auto& plane : m_PlaneGeometries)
         {
             HitRecord hit;
-            if (dae::GeometryUtils::HitTest_Plane(plane, ray, hit))
+            if (GeometryUtils::HitTest_Plane(plane, ray, hit))
             {
                 closestHit.didHit = true;
                 if (hit.t < closestHit.t)
@@ -75,14 +75,14 @@ namespace dae
         HitRecord hit;
         for (const auto& sphere : m_SphereGeometries)
         {
-            if (dae::GeometryUtils::HitTest_Sphere(sphere, ray, hit, true))
+            if (GeometryUtils::HitTest_Sphere(sphere, ray, hit, true))
             {
                 return true;
             }
         }
         for (const auto& plane : m_PlaneGeometries)
         {
-            if (dae::GeometryUtils::HitTest_Plane(plane, ray, hit, true))
+            if (GeometryUtils::HitTest_Plane(plane, ray, hit, true))
             {
                 return true;
             }

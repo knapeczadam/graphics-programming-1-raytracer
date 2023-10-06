@@ -853,8 +853,9 @@ namespace dae
                         case LightingMode::Combined:
                             if (observedArea < 0) continue;
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
-                            finalColor += LightUtils::GetRadiance(light, closestHit.origin) * materials[closestHit.
-                                materialIndex]->Shade(closestHit, dirToLightNormalized, rayDirection) * observedArea;
+                            finalColor += LightUtils::GetRadiance(light, closestHit.origin)
+                                * materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, viewRay.direction)
+                                * observedArea;
                             break;
                         }
                     }
