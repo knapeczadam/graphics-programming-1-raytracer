@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <SDL_events.h>
+
 namespace dae
 {
     Matrix Camera::CalculateCameraToWorld()
@@ -27,6 +29,18 @@ namespace dae
     float Camera::GetFOV() const
     {
         return CalculateFOV(fovAngle);
+    }
+
+    void Camera::Scroll(SDL_MouseWheelEvent wheel)
+    {
+        if (wheel.y > 0) // scroll up
+        {
+            origin += forward * m_ScrollSpeed;
+        }
+        else if (wheel.y < 0) // scroll down
+        {
+            origin -= forward * m_ScrollSpeed;
+        }
     }
 
     float Camera::CalculateFOV(float angle) const

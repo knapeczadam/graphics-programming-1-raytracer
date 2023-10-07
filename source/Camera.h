@@ -6,6 +6,8 @@
 #include "Math.h"
 #include "Timer.h"
 
+class SDL_MouseWheelEvent;
+
 namespace dae
 {
     class Camera
@@ -23,6 +25,7 @@ namespace dae
         Matrix CalculateCameraToWorld();
         void Update(Timer* pTimer);
         float GetFOV() const;
+        void Scroll(SDL_MouseWheelEvent wheel);
 
     private:
         float CalculateFOV(float angle) const;
@@ -42,5 +45,6 @@ namespace dae
         Matrix cameraToWorld{};
         float speed{10.f};
         float rotationSpeed{100.f};
+        float m_ScrollSpeed{0.5f};
     };
 }
