@@ -59,9 +59,8 @@ namespace dae
          */
         static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
         {
-            //todo: W3
-            assert(false && "Not Implemented Yet");
-            return {};
+            const float aSquared = roughness * roughness * roughness * roughness;
+            return aSquared / (PI * std::powf(std::powf(Vector3::Dot(n, h), 2.0f) * (aSquared - 1.0f) + 1.0f, 2.0f));
         }
 
 
