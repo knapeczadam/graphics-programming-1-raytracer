@@ -124,10 +124,11 @@ namespace dae
             switch (light.type)
             {
             case LightType::Point:
-                    radiance = light.color * (light.intensity / (light.origin - target).SqrMagnitude()); 
-                    break;
+                radiance = light.color * (light.intensity / (light.origin - target).SqrMagnitude());
+                break;
             case LightType::Directional:
-                    break;
+                radiance = light.color * light.intensity;
+                break;
             }
             return radiance;
         }
