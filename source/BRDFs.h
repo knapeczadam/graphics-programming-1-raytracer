@@ -35,7 +35,7 @@ namespace dae
         {
             const Vector3 r = Vector3::Reflect(l, n);
             const float cosAlpha = std::max(0.0f, Vector3::Dot(r, v));
-            return ColorRGB{1.0f, 1.0f, 1.0f} * ks * std::powf(cosAlpha, exp);
+            return colors::White * ks * std::powf(cosAlpha, exp);
         }
 
         /**
@@ -73,8 +73,8 @@ namespace dae
          */
         static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
         {
-            const float nDotv =  Vector3::Dot(n, v);
-            return nDotv / (nDotv * (1.0f - roughness) + roughness);
+            const float viewAngle =  std::max(0.0f, Vector3::Dot(n, v));
+            return viewAngle / (viewAngle * (1.0f - roughness) + roughness);
         }
 
         /**
@@ -87,8 +87,8 @@ namespace dae
          */
         static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
         {
-            // roughness = roughness * roughness; ???
-            const float k{std::powf(roughness + 1.0f, 2.0f) / 8.0f};
+            const float alpha{roughness * roughness};
+            const float k{std::powf(alpha + 1.0f, 2.0f) / 8.0f};
             return GeometryFunction_SchlickGGX(n, v, k) * GeometryFunction_SchlickGGX(n, l, k);
         }
     }

@@ -828,11 +828,10 @@ namespace dae
                 {
                     for (const auto& light : lights)
                     {
-                        closestHit.origin += closestHit.normal * 0.001f;
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
                         const Vector3 dirToLightNormalized{dirToLight / lightDistance};
-                        Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
                         const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
                         switch (m_CurrentLightingMode)
                         {
@@ -848,13 +847,13 @@ namespace dae
                         case LightingMode::BRDF:
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
                             finalColor += materials[closestHit.materialIndex]->Shade(
-                                closestHit, dirToLightNormalized, rayDirection);
+                                closestHit, dirToLightNormalized, -viewRay.direction);
                             break;
                         case LightingMode::Combined:
                             if (observedArea < 0) continue;
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
                             finalColor += LightUtils::GetRadiance(light, closestHit.origin)
-                                * materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, viewRay.direction)
+                                * materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
                                 * observedArea;
                             break;
                         }
