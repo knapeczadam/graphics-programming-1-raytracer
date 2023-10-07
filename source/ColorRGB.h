@@ -5,6 +5,14 @@ namespace dae
 {
     struct ColorRGB
     {
+        ColorRGB() = default;
+        ColorRGB(float _r, float _g, float _b) : r(_r), g(_g), b(_b) { }
+        ColorRGB(float c) : r(c), g(c), b(c) { }
+        ColorRGB(const ColorRGB& other) = default;
+        ColorRGB(ColorRGB&& other) noexcept = default;
+        ColorRGB& operator=(const ColorRGB& other) = default;
+        ColorRGB& operator=(ColorRGB&& other) noexcept = default;
+
         float r{};
         float g{};
         float b{};
@@ -22,132 +30,61 @@ namespace dae
         }
 
 #pragma region ColorRGB (Member) Operators
-        const ColorRGB& operator+=(const ColorRGB& c)
+        ColorRGB& operator+=(const ColorRGB& c)
         {
             r += c.r;
             g += c.g;
             b += c.b;
-
             return *this;
         }
 
-        const ColorRGB& operator+(const ColorRGB& c)
-        {
-            return *this += c;
-        }
-
-        ColorRGB operator+(const ColorRGB& c) const
-        {
-            return {r + c.r, g + c.g, b + c.b};
-        }
-
-        const ColorRGB& operator-=(const ColorRGB& c)
+        ColorRGB& operator-=(const ColorRGB& c)
         {
             r -= c.r;
             g -= c.g;
             b -= c.b;
-
             return *this;
         }
 
-        const ColorRGB& operator-(const ColorRGB& c)
-        {
-            return *this -= c;
-        }
-
-        ColorRGB operator-(const ColorRGB& c) const
-        {
-            return {r - c.r, g - c.g, b - c.b};
-        }
-
-        const ColorRGB& operator*=(const ColorRGB& c)
+        ColorRGB& operator*=(const ColorRGB& c)
         {
             r *= c.r;
             g *= c.g;
             b *= c.b;
-
             return *this;
         }
 
-        const ColorRGB& operator*(const ColorRGB& c)
-        {
-            return *this *= c;
-        }
-
-        ColorRGB operator*(const ColorRGB& c) const
-        {
-            return {r * c.r, g * c.g, b * c.b};
-        }
-
-        const ColorRGB& operator/=(const ColorRGB& c)
+        ColorRGB& operator/=(const ColorRGB& c)
         {
             r /= c.r;
             g /= c.g;
             b /= c.b;
-
             return *this;
-        }
-
-        const ColorRGB& operator/(const ColorRGB& c)
-        {
-            return *this /= c;
-        }
-
-        ColorRGB operator/(float x) const
-        {
-            return {r / x, g / x, b / x};
-        }
-
-
-        const ColorRGB& operator*=(float s)
-        {
-            r *= s;
-            g *= s;
-            b *= s;
-
-            return *this;
-        }
-
-        const ColorRGB& operator*(float s)
-        {
-            return *this *= s;
-        }
-
-        ColorRGB operator*(float s) const
-        {
-            return {r * s, g * s, b * s};
-        }
-
-        const ColorRGB& operator/=(float s)
-        {
-            r /= s;
-            g /= s;
-            b /= s;
-
-            return *this;
-        }
-
-        const ColorRGB& operator/(float s)
-        {
-            return *this /= s;
         }
 #pragma endregion
     };
 
-    //ColorRGB (Global) Operators
-    inline ColorRGB operator*(float s, const ColorRGB& c)
+#pragma region ColorRGB (Global) Operators
+    inline ColorRGB operator+(const ColorRGB& lhs, const ColorRGB& rhs)
     {
-        return c * s;
+        return {lhs.r + rhs.r, lhs.g + rhs.g, lhs.b + rhs.b};
     }
 
-    inline ColorRGB operator-(float lhs, const ColorRGB& f0)
+    inline ColorRGB operator-(const ColorRGB& lhs, const ColorRGB& rhs)
     {
-        ColorRGB c;
-        c.r = lhs - f0.r;
-        c.g = lhs - f0.g;
-        c.b = lhs - f0.b;
-        return c;
+        return {lhs.r - rhs.r, lhs.g - rhs.g, lhs.b - rhs.b};
     }
+
+    inline ColorRGB operator*(const ColorRGB& lhs, const ColorRGB& rhs)
+    {
+        return {lhs.r * rhs.r, lhs.g * rhs.g, lhs.b * rhs.b};
+    }
+
+    inline ColorRGB operator/(const ColorRGB& lhs, const ColorRGB& rhs)
+    {
+        return {lhs.r / rhs.r, lhs.g / rhs.g, lhs.b / rhs.b};
+    }
+#pragma endregion
 
     namespace colors
     {
@@ -160,5 +97,6 @@ namespace dae
         static ColorRGB White{1, 1, 1};
         static ColorRGB Black{0, 0, 0};
         static ColorRGB Gray{0.5f, 0.5f, 0.5f};
+        static ColorRGB Dielectric{0.04f, 0.04f, 0.04f};
     }
 }
