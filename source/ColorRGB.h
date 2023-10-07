@@ -93,6 +93,12 @@ namespace dae
             return *this /= c;
         }
 
+        ColorRGB operator/(float x) const
+        {
+            return {r / x, g / x, b / x};
+        }
+
+
         const ColorRGB& operator*=(float s)
         {
             r *= s;
@@ -132,6 +138,15 @@ namespace dae
     inline ColorRGB operator*(float s, const ColorRGB& c)
     {
         return c * s;
+    }
+
+    inline ColorRGB operator-(float lhs, const ColorRGB& f0)
+    {
+        ColorRGB c;
+        c.r = lhs - f0.r;
+        c.g = lhs - f0.g;
+        c.b = lhs - f0.b;
+        return c;
     }
 
     namespace colors
