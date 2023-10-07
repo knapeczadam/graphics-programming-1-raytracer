@@ -73,9 +73,8 @@ namespace dae
          */
         static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
         {
-            //todo: W3
-            assert(false && "Not Implemented Yet");
-            return {};
+            const float nDotv =  Vector3::Dot(n, v);
+            return nDotv / (nDotv * (1.0f - roughness) + roughness);
         }
 
         /**
@@ -88,9 +87,9 @@ namespace dae
          */
         static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
         {
-            //todo: W3
-            assert(false && "Not Implemented Yet");
-            return {};
+            // roughness = roughness * roughness; ???
+            const float k{std::powf(roughness + 1.0f, 2.0f) / 8.0f};
+            return GeometryFunction_SchlickGGX(n, v, k) * GeometryFunction_SchlickGGX(n, l, k);
         }
     }
 }
