@@ -34,7 +34,7 @@ namespace dae
         static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
         {
             const Vector3 r = Vector3::Reflect(l, n);
-            const float cosAlpha = std::max(0.0f, Vector3::Dot(r, v));
+            const float cosAlpha = std::max(0.0f, Vector3::Dot(r, -v));
             return colors::White * ks * std::powf(cosAlpha, exp);
         }
 

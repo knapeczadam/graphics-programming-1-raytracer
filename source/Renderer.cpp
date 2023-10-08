@@ -84,7 +84,7 @@ namespace dae
 #pragma region Week 1
     void Renderer::RenderScene_W1(Scene* pScene) const
     {
-        switch (W1_Todo::Todo8)
+        switch (W1_Todo::Todo6)
         {
         case W1_Todo::Todo2:
             RenderScene_W1_Todo2(pScene);
@@ -328,7 +328,7 @@ namespace dae
 #pragma region Week 2
     void Renderer::RenderScene_W2(Scene* pScene) const
     {
-        switch (W2_Todo::Todo2)
+        switch (W2_Todo::Todo5)
         {
         case W2_Todo::Todo1_1:
             RenderScene_W2_Todo1_1(pScene);
@@ -601,24 +601,6 @@ namespace dae
         case W3_Todo::Todo6:
             RenderScene_W3_Todo6(pScene);
             break;
-        case W3_Todo::Todo7:
-            RenderScene_W3_Todo7(pScene);
-            break;
-        case W3_Todo::Todo9:
-            RenderScene_W3_Todo9(pScene);
-            break;
-        case W3_Todo::Todo10:
-            RenderScene_W3_Todo10(pScene);
-            break;
-        case W3_Todo::Todo11:
-            RenderScene_W3_Todo11(pScene);
-            break;
-        case W3_Todo::Todo12:
-            RenderScene_W3_Todo12(pScene);
-            break;
-        case W3_Todo::Todo13:
-            RenderScene_W3_Todo13(pScene);
-            break;
         }
     }
 
@@ -838,7 +820,7 @@ namespace dae
                         case LightingMode::ObservedArea:
                             if (observedArea < 0) continue;
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
-                            finalColor += ColorRGB{observedArea, observedArea, observedArea};
+                            finalColor += observedArea;
                             break;
                         case LightingMode::Radiance:
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
@@ -846,15 +828,17 @@ namespace dae
                             break;
                         case LightingMode::BRDF:
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
-                            finalColor += materials[closestHit.materialIndex]->Shade(
-                                closestHit, dirToLightNormalized, -viewRay.direction);
+                            finalColor += materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction);
                             break;
                         case LightingMode::Combined:
                             if (observedArea < 0) continue;
                             if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
-                            finalColor += LightUtils::GetRadiance(light, closestHit.origin)
-                                * materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
-                                * observedArea;
+                            finalColor +=
+                                LightUtils::GetRadiance(light, closestHit.origin)
+                                *
+                                materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
+                                *
+                                observedArea;
                             break;
                         }
                     }
@@ -865,30 +849,6 @@ namespace dae
         //@END
         //Update SDL Surface
         SDL_UpdateWindowSurface(m_pWindow);
-    }
-
-    void Renderer::RenderScene_W3_Todo7(Scene* pScene) const
-    {
-    }
-
-    void Renderer::RenderScene_W3_Todo9(Scene* pScene) const
-    {
-    }
-
-    void Renderer::RenderScene_W3_Todo10(Scene* pScene) const
-    {
-    }
-
-    void Renderer::RenderScene_W3_Todo11(Scene* pScene) const
-    {
-    }
-
-    void Renderer::RenderScene_W3_Todo12(Scene* pScene) const
-    {
-    }
-
-    void Renderer::RenderScene_W3_Todo13(Scene* pScene) const
-    {
     }
 #pragma endregion
 }
