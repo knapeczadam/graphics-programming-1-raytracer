@@ -47,7 +47,10 @@ namespace dae
          */
         static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
         {
-            return f0 + (1.0f - f0) * std::powf(1.0f - Vector3::Dot(h, v), 5.0f);
+            // f0 + (1 - f0) * (1 - dot(h, v))^5
+            const float temp{1.0f - Vector3::Dot(h, v)};
+            const float tempQuintic = temp * temp * temp * temp * temp;
+            return f0 + (1.0f - f0) * tempQuintic;
         }
 
         /**
@@ -59,8 +62,15 @@ namespace dae
          */
         static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
         {
-            const float aSquared = roughness * roughness * roughness * roughness;
-            return aSquared / (PI * std::powf(std::powf(Vector3::Dot(n, h), 2.0f) * (aSquared - 1.0f) + 1.0f, 2.0f));
+            // alpha = roughness^2
+            // alpha^2 / (pi * (dot(n, h)^2 * (alpha^2 - 1) + 1)^2)
+            const float alpha{roughness * roughness};
+            const float alphaSq = alpha * alpha;
+            const float nDotH = Vector3::Dot(n, h);
+            const float nDotHSq = nDotH * nDotH;
+            const float temp{nDotHSq * (alphaSq - 1.0f) + 1.0f};
+            const float tempSq = temp * temp;
+            return alphaSq / (PI * tempSq);
         }
 
 
@@ -73,6 +83,7 @@ namespace dae
          */
         static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
         {
+            // dot(n, v) / (dot(n, v) * (1 - k) + k)
             const float viewAngle = std::max(0.0f, Vector3::Dot(n, v));
             return viewAngle / (viewAngle * (1.0f - roughness) + roughness);
         }
@@ -87,8 +98,12 @@ namespace dae
          */
         static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
         {
+            // alpha = roughness^2
+            // k direct = (alpha + 1)^2 / 8
             const float alpha{roughness * roughness};
-            const float k{std::powf(alpha + 1.0f, 2.0f) / 8.0f};
+            const float numerator{alpha + 1.0f};
+            const float numeratorSq = numerator * numerator;
+            const float k{numeratorSq / 8.0f};
             return GeometryFunction_SchlickGGX(n, v, k) * GeometryFunction_SchlickGGX(n, l, k);
         }
     }
