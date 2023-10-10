@@ -101,16 +101,18 @@ namespace dae
     class Material_CookTorrence final : public Material
     {
     public:
-        Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness):
-            m_Albedo(albedo), m_Metalness(metalness), m_Roughness(roughness)
+        Material_CookTorrence(const ColorRGB& albedo, float metalness, float roughness)
+              : m_Metalness{metalness}
+              , m_Roughness{roughness}
+              , m_Albedo{albedo}
+              , m_F0{m_Metalness == 0.0f ? colors::Dielectric : m_Albedo}
         {
         }
 
         ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
         {
-            const ColorRGB f0{m_Metalness == 0.0f ? colors::Dielectric : m_Albedo};
             const Vector3 h{(v + l) / (v + l).Magnitude()};
-            const ColorRGB F{BRDF::FresnelFunction_Schlick(h, v, f0)};
+            const ColorRGB F{BRDF::FresnelFunction_Schlick(h, v, m_F0)};
             const float D{BRDF::NormalDistribution_GGX(hitRecord.normal, h, m_Roughness)};
             const float G{BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness)};
             const ColorRGB specular{
@@ -123,9 +125,10 @@ namespace dae
         }
 
     private:
-        ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
         float m_Metalness{1.0f};
         float m_Roughness{0.1f}; // [1.0 > 0.0] >> [ROUGH > SMOOTH]
+        ColorRGB m_Albedo{0.955f, 0.637f, 0.538f}; //Copper
+        ColorRGB m_F0;
     };
 #pragma endregion
 }
