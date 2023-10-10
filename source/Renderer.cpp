@@ -10,6 +10,9 @@
 #include "Scene.h"
 #include "Utils.h"
 
+#include <execution>
+#include <numeric>
+
 namespace dae
 {
     Renderer::Renderer(SDL_Window* pWindow) :
@@ -19,6 +22,10 @@ namespace dae
         //Initialize
         SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
         m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
+        m_HorizontalIter.resize(m_Width);
+        m_VerticalIter.resize(m_Height);
+        std::iota(m_HorizontalIter.begin(), m_HorizontalIter.end(), 0);
+        std::iota(m_VerticalIter.begin(), m_VerticalIter.end(), 0);
     }
 
     void Renderer::Render(Scene* pScene) const
@@ -784,10 +791,74 @@ namespace dae
         Camera& camera = pScene->GetCamera();
         const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
         const float FOV{camera.GetFOV()};
+        const auto& lights = pScene->GetLights();
+        const auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
-        auto& materials = pScene->GetMaterials();
+#define MT 1
+#if MT
+        std::for_each(std::execution::par, m_VerticalIter.begin(), m_VerticalIter.end(),
+                      [this, FOV, camera, cameraToWorld, pScene, lights, materials, aspectRatio](int py)
+                      // [&](int py)
+                      {
+                          Vector3 rayDirection;
+                          for (int px{}; px < m_Width; ++px)
+                          {
+                              const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                              const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                              rayDirection.x = rx * aspectRatio * FOV;
+                              rayDirection.y = ry * FOV;
+                              rayDirection.z = 1.0f;
+                              rayDirection = cameraToWorld.TransformVector(rayDirection);
+                              rayDirection.Normalize();
+
+                              Ray viewRay{camera.origin, rayDirection};
+
+                              HitRecord closestHit{};
+                              pScene->GetClosestHit(viewRay, closestHit);
+
+                              ColorRGB finalColor{};
+                              if (closestHit.didHit)
+                              {
+                                  for (const auto& light : lights)
+                                  {
+                                      const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                                      const float lightDistance{dirToLight.Magnitude()};
+                                      const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                                      Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                                      const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                                      switch (m_CurrentLightingMode)
+                                      {
+                                      case LightingMode::ObservedArea:
+                                          if (observedArea < 0) continue;
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += observedArea;
+                                          break;
+                                      case LightingMode::Radiance:
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+                                          break;
+                                      case LightingMode::BRDF:
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction);
+                                          break;
+                                      case LightingMode::Combined:
+                                          if (observedArea < 0) continue;
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor +=
+                                              LightUtils::GetRadiance(light, closestHit.origin)
+                                              *
+                                              materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
+                                              *
+                                              observedArea;
+                                          break;
+                                      }
+                                  }
+                              }
+                              UpdateColor(finalColor, px, py);
+                          }
+                      });
+#else
         Vector3 rayDirection;
-        auto& lights = pScene->GetLights();
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
@@ -846,6 +917,7 @@ namespace dae
                 UpdateColor(finalColor, px, py);
             }
         }
+#endif
         //@END
         //Update SDL Surface
         SDL_UpdateWindowSurface(m_pWindow);

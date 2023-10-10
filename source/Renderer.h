@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cstdint>
+#include <vector>
 
 struct SDL_Window;
 struct SDL_Surface;
@@ -107,5 +107,8 @@ namespace dae
 
         LightingMode m_CurrentLightingMode{LightingMode::Combined};
         bool m_ShadowsEnabled{true};
+
+        std::vector<int> m_HorizontalIter;
+        std::vector<int> m_VerticalIter;
     };
 }
