@@ -26,6 +26,8 @@ namespace dae
         void Update(Timer* pTimer);
         float GetFOV() const;
         void Scroll(SDL_MouseWheelEvent wheel);
+        void IncreaseFOV();
+        void DecreaseFOV();
 
     private:
         float CalculateFOV(float angle) const;

@@ -100,6 +100,10 @@ int main(int argc, char* args[])
                     pRenderer->SwitchLightingMode();
                 if (e.key.keysym.scancode == SDL_SCANCODE_F6)
                     pTimer->StartBenchmark();
+                if (e.key.keysym.scancode == SDL_SCANCODE_E)
+                    pScene->GetCamera().IncreaseFOV();
+                if (e.key.keysym.scancode == SDL_SCANCODE_Q)
+                    pScene->GetCamera().DecreaseFOV();
                 break;
             case SDL_MOUSEWHEEL:
                 pScene->GetCamera().Scroll(e.wheel);

@@ -43,6 +43,16 @@ namespace dae
         }
     }
 
+    void Camera::IncreaseFOV()
+    {
+        ++fovAngle;
+    }
+
+    void Camera::DecreaseFOV()
+    {
+        --fovAngle;
+    }
+
     float Camera::CalculateFOV(float angle) const
     {
         const float halfAlpha{(angle / 2.0f) * TO_RADIANS};

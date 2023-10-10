@@ -73,7 +73,7 @@ namespace dae
          */
         static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
         {
-            const float viewAngle =  std::max(0.0f, Vector3::Dot(n, v));
+            const float viewAngle = std::max(0.0f, Vector3::Dot(n, v));
             return viewAngle / (viewAngle * (1.0f - roughness) + roughness);
         }
 
