@@ -117,7 +117,7 @@ namespace dae
                 (F * D * G) /
                 (4.0f * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal))
             };
-            const ColorRGB kd{m_Metalness == 0.0f ? (1.0f - F) : colors::Black};
+            const ColorRGB kd{m_Metalness == 0.0f ? (1.0f - specular) : colors::Black};
             const ColorRGB diffuse{BRDF::Lambert(kd, m_Albedo)};
             return diffuse + specular;
         }
