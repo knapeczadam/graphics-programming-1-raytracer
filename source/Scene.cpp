@@ -244,7 +244,7 @@ namespace dae
         AddSphere(Vector3{-1.75f, 1.f, 0.f}, .75f, matCT_GrayRoughMetal);
         AddSphere(Vector3{0.f, 1.f, 0.f}, .75f, matCT_GrayMediumMetal);
         AddSphere(Vector3{1.75f, 1.f, 0.f}, .75f, matCT_GraySmoothMetal);
-        
+
         // AddSphere(Vector3{-1.75f, 1.f, 0.f}, .75f, matLambertPhong1);
         // AddSphere(Vector3{0.f, 1.f, 0.f}, .75f, matLambertPhong2);
         // AddSphere(Vector3{1.75f, 1.f, 0.f}, .75f, matLambertPhong3);

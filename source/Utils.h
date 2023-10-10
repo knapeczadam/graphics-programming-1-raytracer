@@ -13,35 +13,27 @@ namespace dae
 
         inline float Remap(float a, float b, float t) { return (t - a) / (b - a); }
 
-        inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord,
-                                   bool ignoreHitRecord = false)
+        inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
             const Vector3 L{sphere.origin - ray.origin}; // vector from ray's origin to sphere's center
             const float tca{Vector3::Dot(L, ray.direction)}; // project vector L onto ray's direction vector
-            if (tca < 0.0f)
-                return false; // sphere is behind ray's origin (and direction
+            if (tca < 0.0f) return false; // sphere is behind ray's origin (and direction
             const float d2{Vector3::Dot(L, L) - tca * tca}; // distance from sphere center to ray
             const float radius2{sphere.radius * sphere.radius};
-            if (d2 > radius2)
-                return false;
-            const float thc{sqrt(radius2 - d2)}; // distance from ray to sphere surface
+            if (d2 > radius2) return false;
+            const float thc{std::sqrtf(radius2 - d2)}; // distance from ray to sphere surface
             float t0{tca - thc}; // distance from ray's origin to sphere surface
-            float t1{tca + thc}; // distance from ray's origin to sphere surface
-            //if (t0 > t1)
-            //	std::swap(t0, t1);
-            if (t0 > ray.min and t0 < ray.max)
+            //float t1{tca + thc}; // distance from ray's origin to sphere surface
+            if (t0 < ray.min or t0 > ray.max) return false;
+            if (not ignoreHitRecord)
             {
-                if (not ignoreHitRecord)
-                {
-                    hitRecord.didHit = true;
-                    hitRecord.t = t0;
-                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-                    hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
-                    hitRecord.materialIndex = sphere.materialIndex;
-                }
-                return true;
+                hitRecord.didHit = true;
+                hitRecord.t = t0;
+                hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+                hitRecord.materialIndex = sphere.materialIndex;
             }
-            return false;
+            return true;
         }
 
         inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
@@ -56,19 +48,18 @@ namespace dae
                                   bool ignoreHitRecord = false)
         {
             const float denom{Vector3::Dot(plane.normal, ray.direction)};
+            if (denom >= 0.0f) return false;
+            const float t{Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom};
+            if (t < ray.min or t > ray.max) return false;
+            if (not ignoreHitRecord)
             {
-                const float t{Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom};
-                if (t > ray.max or t < ray.min) return false;
-                if (not ignoreHitRecord)
-                {
-                    hitRecord.didHit = true;
-                    hitRecord.t = t;
-                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-                    hitRecord.normal = plane.normal;
-                    hitRecord.materialIndex = plane.materialIndex;
-                    return true;
-                }
+                hitRecord.didHit = true;
+                hitRecord.t = t;
+                hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                hitRecord.normal = plane.normal;
+                hitRecord.materialIndex = plane.materialIndex;
             }
+            return true;
         }
 
         inline bool HitTest_Plane(const Plane& plane, const Ray& ray)
