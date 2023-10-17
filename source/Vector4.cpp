@@ -1,9 +1,11 @@
 #include "Vector4.h"
 
-#include <cassert>
-
 #include "Vector3.h"
+#include "MathHelpers.h"
+#include "Macros.h"
+
 #include <cmath>
+#include <cassert>
 
 namespace dae
 {
@@ -17,7 +19,12 @@ namespace dae
 
     float Vector4::Magnitude() const
     {
-        return sqrtf(x * x + y * y + z * z + w * w);
+#if QRSQRT
+        const float magnitudeSq {x * x + y * y + z * z + w * w};
+        return 1.0f / Q_rsqrt(magnitudeSq);
+#else
+        return std::sqrt(x * x + y * y + z * z + w * w);
+#endif
     }
 
     float Vector4::SqrMagnitude() const
@@ -27,19 +34,32 @@ namespace dae
 
     float Vector4::Normalize()
     {
-        const float m = Magnitude();
+#if QRSQRT
+        const float m {Q_rsqrt(x * x + y * y + z * z + w * w)};
+        x *= m;
+        y *= m;
+        z *= m;
+        w *= m;
+        return m;
+#else
+        const float m{Magnitude()};
         x /= m;
         y /= m;
         z /= m;
         w /= m;
-
         return m;
+#endif
     }
 
     Vector4 Vector4::Normalized() const
     {
-        const float m = Magnitude();
+#if QRSQRT
+        const float m {Q_rsqrt(x * x + y * y + z * z + w * w)};
+        return {x * m, y * m, z * m, w * m};
+#else
+        const float m{Magnitude()};
         return {x / m, y / m, z / m, w / m};
+#endif
     }
 
     float Vector4::Dot(const Vector4& v1, const Vector4& v2)

@@ -97,6 +97,7 @@ xcopy "$(SolutionDir)..\lib\vld\x64\Microsoft.DTfW.DHL.manifest" "$(OutDir)" /y 
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColorRGB.h" />
     <ClInclude Include="DataTypes.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MathHelpers.h" />
     <ClInclude Include="Matrix.h" />
@@ -110,6 +111,7 @@ xcopy "$(SolutionDir)..\lib\vld\x64\Microsoft.DTfW.DHL.manifest" "$(OutDir)" /y 
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="MathHelpers.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />

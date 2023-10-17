@@ -19,6 +19,8 @@ namespace dae
         return a * a;
     }
 
+    float Q_rsqrt(float number);
+
     inline float Lerpf(float a, float b, float factor)
     {
         return ((1 - factor) * a) + (factor * b);
