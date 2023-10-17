@@ -21,7 +21,7 @@ namespace dae
             const float d2{Vector3::Dot(L, L) - tca * tca}; // distance from sphere center to ray
             const float radius2{sphere.radius * sphere.radius};
             if (d2 > radius2) return false;
-            const float thc{std::sqrtf(radius2 - d2)}; // distance from ray to sphere surface
+            const float thc{std::sqrt(radius2 - d2)}; // distance from ray to sphere surface
             float t0{tca - thc}; // distance from ray's origin to sphere surface
             //float t1{tca + thc}; // distance from ray's origin to sphere surface
             if (t0 < ray.min or t0 > ray.max) return false;
@@ -44,8 +44,7 @@ namespace dae
 #pragma endregion
 #pragma region Plane HitTest
         //PLANE HIT-TESTS
-        inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord,
-                                  bool ignoreHitRecord = false)
+        inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
             const float denom{Vector3::Dot(plane.normal, ray.direction)};
             if (denom >= 0.0f) return false;

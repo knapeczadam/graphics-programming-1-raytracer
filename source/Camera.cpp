@@ -55,7 +55,7 @@ namespace dae
 
     float Camera::CalculateFOV(float angle) const
     {
-        const float halfAlpha{(angle / 2.0f) * TO_RADIANS};
+        const float halfAlpha{(angle * 0.5f) * TO_RADIANS};
         return std::tanf(halfAlpha);
     }
 
