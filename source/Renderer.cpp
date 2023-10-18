@@ -42,6 +42,10 @@ namespace dae
         {
             RenderScene_W3(pScene);
         }
+        else if (dynamic_cast<Scene_W4*>(pScene))
+        {
+            RenderScene_W4(pScene);
+        }
     }
 
     bool Renderer::SaveBufferToImage() const
@@ -921,6 +925,13 @@ namespace dae
         //@END
         //Update SDL Surface
         SDL_UpdateWindowSurface(m_pWindow);
+    }
+#pragma endregion
+
+#pragma region Week 4
+    void Renderer::RenderScene_W4(Scene* pScene) const
+    {
+        RenderScene_W3_Todo6(pScene);
     }
 #pragma endregion
 }

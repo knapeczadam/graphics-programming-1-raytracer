@@ -49,6 +49,8 @@ namespace dae
         void RenderScene_W3_Todo3(Scene* pScene) const;
         void RenderScene_W3_Todo4(Scene* pScene) const;
         void RenderScene_W3_Todo6(Scene* pScene) const;
+        
+        void RenderScene_W4(Scene* pScene) const;
 
         void UpdateColor(ColorRGB& finalColor, int px, int py) const;
 

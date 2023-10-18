@@ -39,6 +39,7 @@ namespace dae
         void GetClosestHit(const Ray& ray, HitRecord& closestHit) const;
         void GetClosestHitSphere(const Ray& ray, HitRecord& closestHit) const;
         void GetClosestHitPlane(const Ray& ray, HitRecord& closestHit) const;
+        void GetClosestHitTriangle(const Ray& ray, HitRecord& closestHit) const;
         bool DoesHit(const Ray& ray) const;
 
         const std::vector<Plane>& GetPlaneGeometries() const { return m_PlaneGeometries; }
@@ -57,6 +58,8 @@ namespace dae
 
         std::map<Vector3, int> m_Hits;
 
+        // temp
+        std::vector<Triangle> m_Triangles{};
         Camera m_Camera{};
 
         Sphere* AddSphere(const Vector3& origin, float radius, unsigned char materialIndex = 0);
@@ -101,7 +104,7 @@ namespace dae
     };
 
     //+++++++++++++++++++++++++++++++++++++++++
-    //WEEK 2 Test Scene
+    //WEEK 3 Test Scene
     class Scene_W3 final : public Scene
     {
     public:
@@ -112,6 +115,22 @@ namespace dae
         Scene_W3(Scene_W3&&) noexcept = delete;
         Scene_W3& operator=(const Scene_W3&) = delete;
         Scene_W3& operator=(Scene_W3&&) noexcept = delete;
+
+        void Initialize() override;
+    };
+    
+    //+++++++++++++++++++++++++++++++++++++++++
+    //WEEK 4 Test Scene
+    class Scene_W4 final : public Scene
+    {
+    public:
+        Scene_W4() = default;
+        ~Scene_W4() override = default;
+
+        Scene_W4(const Scene_W4&) = delete;
+        Scene_W4(Scene_W4&&) noexcept = delete;
+        Scene_W4& operator=(const Scene_W4&) = delete;
+        Scene_W4& operator=(Scene_W4&&) noexcept = delete;
 
         void Initialize() override;
     };

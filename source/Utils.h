@@ -72,8 +72,6 @@ namespace dae
         inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord,
                                      bool ignoreHitRecord = false)
         {
-            //todo W5
-            assert(false && "No Implemented Yet!");
             return false;
         }
 
@@ -87,8 +85,6 @@ namespace dae
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord,
                                          bool ignoreHitRecord = false)
         {
-            //todo W5
-            assert(false && "No Implemented Yet!");
             return false;
         }
 
