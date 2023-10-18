@@ -133,10 +133,10 @@ namespace dae
             bool didHit{false};
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
-                const Vector3 v0{mesh.positions[mesh.indices[idx]]};
-                const Vector3 v1{mesh.positions[mesh.indices[idx + 1]]};
-                const Vector3 v2{mesh.positions[mesh.indices[idx + 2]]};
-                Triangle triangle{v0, v1, v2, mesh.normals[normIdx]};
+                const Vector3 v0{mesh.transformedPositions[mesh.indices[idx]]};
+                const Vector3 v1{mesh.transformedPositions[mesh.indices[idx + 1]]};
+                const Vector3 v2{mesh.transformedPositions[mesh.indices[idx + 2]]};
+                Triangle triangle{v0, v1, v2, mesh.transformedNormals[normIdx]};
                 triangle.cullMode = mesh.cullMode;
                 triangle.materialIndex = mesh.materialIndex;
                 if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))

@@ -356,10 +356,16 @@ namespace dae
         	0,1,2, //Triangle 1
         	0,2,3, //Triangle 2
         };
-        
+
+        pMesh->normals.reserve(pMesh->indices.size() / 3);
         pMesh->CalculateNormals();
         
+        pMesh->transformedPositions.reserve(pMesh->positions.size());
+        pMesh->transformedNormals.reserve(pMesh->normals.size());
+        
         pMesh->Translate({ 0.f,1.5f,0.f });
+        pMesh->RotateY(45);
+        
         pMesh->UpdateTransforms();
 
         ////OBJ
@@ -387,8 +393,7 @@ namespace dae
     void Scene_W4::Update(dae::Timer* pTimer)
     {
         Scene::Update(pTimer);
-
-        pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+        pMesh->RotateY( PI_DIV_2 * pTimer->GetTotal());
         pMesh->UpdateTransforms();
     }
 

@@ -127,9 +127,6 @@ namespace dae
                 UpdateTransforms();
         }
 
-        /**
-         * \brief Should calculate the normal for each triangle defined by the Positions & Indices buffers, store the results in ‘normals’
-         */
         void CalculateNormals()
         {
             for (size_t idx{0}; idx < indices.size(); idx += 3)
@@ -138,24 +135,21 @@ namespace dae
                 const Vector3 edgeV0V2 = positions[indices[idx + 2]] - positions[indices[idx]];
                 const Vector3 normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
 
-                normals.push_back(normal);
+                normals.emplace_back(normal);
             }
         }
 
-        /**
-         * \brief Should transform the positions & normals (translation, rotation, scale matrices) and store the result in ‘transformedPositions’ & ‘transformedNormals’
-                  respectively
-         */
         void UpdateTransforms()
         {
-            //Calculate Final Transform 
-            //const auto finalTransform = ...
-
-            //Transform Positions (positions > transformedPositions)
-            //...
-
-            //Transform Normals (normals > transformedNormals)
-            //...
+            const auto finalTransform{ translationTransform * rotationTransform * scaleTransform};
+            for (size_t idx{0}; idx < positions.size(); ++idx)
+            {
+                transformedPositions[idx] = finalTransform.TransformPoint(positions[idx]);
+            }
+            for (size_t idx{0}; idx < normals.size(); ++idx)
+            {
+                transformedNormals[idx] = finalTransform.TransformVector(normals[idx]);
+            }
         }
     };
 #pragma endregion
