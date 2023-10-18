@@ -7,6 +7,8 @@ namespace dae
     Matrix Camera::CalculateCameraToWorld()
     {
         Matrix out;
+        // const float magnitude{ std::sqrt(forward.z * forward.z + forward.x * forward.x) };
+        // right = Vector3{forward.z / magnitude, 0.f, -forward.x / magnitude};
         right = Vector3{forward.z, 0.f, -forward.x}.Normalized();
         up = Vector3::Cross(forward, right);
         out[0] = Vector4{right, 0.f};
@@ -51,6 +53,16 @@ namespace dae
     void Camera::DecreaseFOV()
     {
         --fovAngle;
+    }
+
+    void Camera::SetTotalPitch(float pitch)
+    {
+        totalPitch = pitch;
+    }
+
+    void Camera::SetTotalYaw(float yaw)
+    {
+        totalYaw = yaw;
     }
 
     float Camera::CalculateFOV(float angle) const

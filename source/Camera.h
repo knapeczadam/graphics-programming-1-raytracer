@@ -28,6 +28,8 @@ namespace dae
         void Scroll(SDL_MouseWheelEvent wheel);
         void IncreaseFOV();
         void DecreaseFOV();
+        void SetTotalPitch(float pitch);
+        void SetTotalYaw(float yaw);
 
     private:
         float CalculateFOV(float angle) const;

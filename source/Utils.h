@@ -69,10 +69,56 @@ namespace dae
 #pragma endregion
 #pragma region Triangle HitTest
         //TRIANGLE HIT-TESTS
-        inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord,
-                                     bool ignoreHitRecord = false)
+        inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
-            return false;
+            const float denom{Vector3::Dot(triangle.normal, ray.direction)};
+            if (AreEqual(denom, 0.0f)) return false;
+
+            if (not ignoreHitRecord)
+            {
+                if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+                {
+                    if (denom < 0.0f) return false;
+                }
+                else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+                {
+                    if (denom > 0.0f) return false;
+                }
+            }
+            else
+            {
+                if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+                {
+                    if (denom > 0.0f) return false;
+                }
+                else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+                {
+                    if (denom < 0.0f) return false;
+                }
+            }
+
+            const Vector3 L{triangle.v0 - ray.origin};
+            const float t{Vector3::Dot(L, triangle.normal) / denom};
+            if (t < ray.min or t > ray.max) return false;
+            const Vector3 P{ray.origin + ray.direction * t};
+
+            const Vector3 a{triangle.v1 - triangle.v0};
+            const Vector3 b{triangle.v2 - triangle.v1};
+            const Vector3 c{triangle.v0 - triangle.v2};
+
+            if (Vector3::Dot(Vector3::Cross(a, P - triangle.v0), triangle.normal) < 0.0f) return false;
+            if (Vector3::Dot(Vector3::Cross(b, P - triangle.v1), triangle.normal) < 0.0f) return false;
+            if (Vector3::Dot(Vector3::Cross(c, P - triangle.v2), triangle.normal) < 0.0f) return false;
+
+            if (not ignoreHitRecord)
+            {
+                hitRecord.didHit = true;
+                hitRecord.t = t;
+                hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                hitRecord.normal = triangle.normal;
+                hitRecord.materialIndex = triangle.materialIndex;
+            }
+            return true;
         }
 
         inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
