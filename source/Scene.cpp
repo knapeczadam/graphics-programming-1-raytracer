@@ -30,7 +30,7 @@ namespace dae
     {
         GetClosestHitSphere(ray, closestHit);
         GetClosestHitPlane(ray, closestHit);
-        GetClosestHitTriangle(ray, closestHit);
+        GetClosestHitTriangleMesh(ray, closestHit);
     }
 
     void Scene::GetClosestHitSphere(const Ray& ray, HitRecord& closestHit) const
@@ -73,7 +73,6 @@ namespace dae
 
     void Scene::GetClosestHitTriangle(const Ray& ray, HitRecord& closestHit) const
     {
-        
         for (const auto& triangle : m_Triangles)
         {
             HitRecord hit;
@@ -86,6 +85,25 @@ namespace dae
                     closestHit.origin = hit.origin;
                     closestHit.normal = hit.normal;
                     closestHit.materialIndex = triangle.materialIndex;
+                }
+            }
+        }
+    }
+
+    void Scene::GetClosestHitTriangleMesh(const Ray& ray, HitRecord& closestHit) const
+    {
+        for (const auto& triangleMesh : m_TriangleMeshGeometries)
+        {
+            HitRecord hit;
+            if (GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray, hit))
+            {
+                closestHit.didHit = true;
+                if (hit.t < closestHit.t)
+                {
+                    closestHit.t = hit.t;
+                    closestHit.origin = hit.origin;
+                    closestHit.normal = hit.normal;
+                    closestHit.materialIndex = triangleMesh.materialIndex;
                 }
             }
         }
@@ -108,9 +126,16 @@ namespace dae
                 return true;
             }
         }
-        for (const auto& triangle : m_Triangles)
+        // for (const auto& triangle : m_Triangles)
+        // {
+        //     if (GeometryUtils::HitTest_Triangle(triangle, ray, hit, true))
+        //     {
+        //         return true;
+        //     }
+        // }
+        for (const auto& triangleMesh : m_TriangleMeshGeometries)
         {
-            if (GeometryUtils::HitTest_Triangle(triangle, ray, hit, true))
+            if (GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray, hit, true))
             {
                 return true;
             }
@@ -296,6 +321,7 @@ namespace dae
     {
         m_Camera.origin = {0.f, 1.f, -5.f};
         m_Camera.fovAngle = 45.f;
+        // m_Camera.SetTotalYaw(180);
 
         //Materials
         const auto matLambert_GrayBlue = AddMaterial(new Material_Lambert({.49f, 0.57f, 0.57f}, 1.f));
@@ -310,30 +336,31 @@ namespace dae
 
         ////Triangle (Temp)
         ////===============
-        auto triangle = Triangle{{-.75f, .5f, .0f}, {-.75f, 2.f, .0f}, {.75f, .5f, 0.f}};
-        triangle.cullMode = TriangleCullMode::NoCulling;
-        triangle.materialIndex = matLambert_White;
-
-        m_Triangles.emplace_back(triangle);
+        // auto triangle = Triangle{{-.75f, .5f, .0f}, {-.75f, 2.f, .0f}, {.75f, .5f, 0.f}};
+        // triangle.cullMode = TriangleCullMode::NoCulling;
+        // triangle.materialIndex = matLambert_White;
+        //
+        // m_Triangles.emplace_back(triangle);
 
         //Triangle Mesh
         //=============
-        // pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-        // pMesh->positions = {
-        // 	{-.75f,-1.f,.0f},  //V0
-        // 	{-.75f,1.f, .0f},  //V2
-        // 	{.75f,1.f,1.f},    //V3
-        // 	{.75f,-1.f,0.f} }; //V4
-        //
-        // pMesh->indices = {
-        // 	0,1,2, //Triangle 1
-        // 	0,2,3  //Triangle 2
-        // };
-        //
-        // pMesh->CalculateNormals();
-        //
-        // pMesh->Translate({ 0.f,1.5f,0.f });
-        // pMesh->UpdateTransforms();
+        pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+        pMesh->positions = {
+        	{-.75f,-1.f,.0f},  //V0
+        	{-.75f,1.f, .0f},  //V2
+        	{.75f,1.f,1.f},    //V3
+        	{.75f,-1.f,0.f},    //V4
+        }; 
+        
+        pMesh->indices = {
+        	0,1,2, //Triangle 1
+        	0,2,3, //Triangle 2
+        };
+        
+        pMesh->CalculateNormals();
+        
+        pMesh->Translate({ 0.f,1.5f,0.f });
+        pMesh->UpdateTransforms();
 
         ////OBJ
         ////===
@@ -355,6 +382,14 @@ namespace dae
         AddPointLight(Vector3{0.f, 5.f, 5.f}, 50.f, ColorRGB{1.f, .61f, .45f}); //Backlight
         AddPointLight(Vector3{-2.5f, 5.f, -5.f}, 70.f, ColorRGB{1.f, .8f, .45f}); //Front Light Left
         AddPointLight(Vector3{2.5f, 2.5f, -5.f}, 50.f, ColorRGB{.34f, .47f, .68f});
+    }
+
+    void Scene_W4::Update(dae::Timer* pTimer)
+    {
+        Scene::Update(pTimer);
+
+        pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+        pMesh->UpdateTransforms();
     }
 
 #pragma endregion

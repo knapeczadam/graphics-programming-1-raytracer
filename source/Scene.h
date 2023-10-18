@@ -40,6 +40,7 @@ namespace dae
         void GetClosestHitSphere(const Ray& ray, HitRecord& closestHit) const;
         void GetClosestHitPlane(const Ray& ray, HitRecord& closestHit) const;
         void GetClosestHitTriangle(const Ray& ray, HitRecord& closestHit) const;
+        void GetClosestHitTriangleMesh(const Ray& ray, HitRecord& closestHit) const;
         bool DoesHit(const Ray& ray) const;
 
         const std::vector<Plane>& GetPlaneGeometries() const { return m_PlaneGeometries; }
@@ -133,5 +134,8 @@ namespace dae
         Scene_W4& operator=(Scene_W4&&) noexcept = delete;
 
         void Initialize() override;
+        void Update(dae::Timer* pTimer) override;
+    private:
+        TriangleMesh* pMesh {nullptr};
     };
 }

@@ -128,9 +128,22 @@ namespace dae
         }
 #pragma endregion
 #pragma region TriangeMesh HitTest
-        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord,
-                                         bool ignoreHitRecord = false)
+        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
+            bool didHit{false};
+            for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
+            {
+                const Vector3 v0{mesh.positions[mesh.indices[idx]]};
+                const Vector3 v1{mesh.positions[mesh.indices[idx + 1]]};
+                const Vector3 v2{mesh.positions[mesh.indices[idx + 2]]};
+                Triangle triangle{v0, v1, v2, mesh.normals[normIdx]};
+                triangle.cullMode = mesh.cullMode;
+                triangle.materialIndex = mesh.materialIndex;
+                if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
+                {
+                    return true;
+                }
+            }
             return false;
         }
 
