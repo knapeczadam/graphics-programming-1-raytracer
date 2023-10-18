@@ -74,26 +74,26 @@ namespace dae
             const float denom{Vector3::Dot(triangle.normal, ray.direction)};
             if (AreEqual(denom, 0.0f)) return false;
 
-            if (not ignoreHitRecord)
+            if (ignoreHitRecord) // shadow ray
             {
                 if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
                 {
-                    if (denom < 0.0f) return false;
+                    if (denom > 0.0f) return false;
                 }
                 else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
                 {
-                    if (denom > 0.0f) return false;
+                    if (denom < 0.0f) return false;
                 }
             }
             else
             {
                 if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
                 {
-                    if (denom > 0.0f) return false;
+                    if (denom < 0.0f) return false;
                 }
                 else if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
                 {
-                    if (denom < 0.0f) return false;
+                    if (denom > 0.0f) return false;
                 }
             }
 
@@ -130,15 +130,16 @@ namespace dae
 #pragma region TriangeMesh HitTest
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
-            bool didHit{false};
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
                 const Vector3 v0{mesh.transformedPositions[mesh.indices[idx]]};
                 const Vector3 v1{mesh.transformedPositions[mesh.indices[idx + 1]]};
                 const Vector3 v2{mesh.transformedPositions[mesh.indices[idx + 2]]};
+                
                 Triangle triangle{v0, v1, v2, mesh.transformedNormals[normIdx]};
                 triangle.cullMode = mesh.cullMode;
                 triangle.materialIndex = mesh.materialIndex;
+                
                 if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
                 {
                     return true;

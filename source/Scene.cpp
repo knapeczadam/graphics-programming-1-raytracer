@@ -344,45 +344,46 @@ namespace dae
 
         //Triangle Mesh
         //=============
-        pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-        pMesh->positions = {
-        	{-.75f,-1.f,.0f},  //V0
-        	{-.75f,1.f, .0f},  //V2
-        	{.75f,1.f,1.f},    //V3
-        	{.75f,-1.f,0.f},    //V4
-        }; 
-        
-        pMesh->indices = {
-        	0,1,2, //Triangle 1
-        	0,2,3, //Triangle 2
-        };
-
-        pMesh->normals.reserve(pMesh->indices.size() / 3);
-        pMesh->CalculateNormals();
-        
-        pMesh->transformedPositions.reserve(pMesh->positions.size());
-        pMesh->transformedNormals.reserve(pMesh->normals.size());
-        
-        pMesh->Translate({ 0.f,1.5f,0.f });
-        pMesh->RotateY(45);
-        
-        pMesh->UpdateTransforms();
+        // pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+        // pMesh->positions = {
+        // 	{-.75f,-1.f,.0f},  //V0
+        // 	{-.75f,1.f, .0f},  //V2
+        // 	{.75f,1.f,1.f},    //V3
+        // 	{.75f,-1.f,0.f},    //V4
+        // }; 
+        //
+        // pMesh->indices = {
+        // 	0,1,2, //Triangle 1
+        // 	0,2,3, //Triangle 2
+        // };
+        //
+        // pMesh->normals.reserve(pMesh->indices.size() / 3);
+        // pMesh->CalculateNormals();
+        //
+        // pMesh->transformedPositions.reserve(pMesh->positions.size());
+        // pMesh->transformedNormals.reserve(pMesh->normals.size());
+        //
+        // pMesh->Translate({ 0.f,1.5f,0.f });
+        // pMesh->RotateY(45);
+        //
+        // pMesh->UpdateTransforms();
 
         ////OBJ
         ////===
-        //pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-        //Utils::ParseOBJ("Resources/simple_cube.obj",
-        ////Utils::ParseOBJ("Resources/simple_object.obj",
-        //	pMesh->positions, 
-        //	pMesh->normals, 
-        //	pMesh->indices);
+        pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
+        Utils::ParseOBJ("Resources/simple_object.obj",
+        //Utils::ParseOBJ("Resources/simple_object.obj",
+        	pMesh->positions, 
+        	pMesh->normals, 
+        	pMesh->indices);
+        
+        pMesh->transformedPositions.reserve(pMesh->positions.size());
+        pMesh->transformedNormals.reserve(pMesh->normals.size());
 
-        ////No need to Calculate the normals, these are calculated inside the ParseOBJ function
-        //pMesh->UpdateTransforms();
-
-        //pMesh->Scale({ .7f,.7f,.7f });
-        //pMesh->Translate({ .0f,1.f,0.f });
-
+        //No need to Calculate the normals, these are calculated inside the ParseOBJ function
+        pMesh->Scale({ .7f,.7f,.7f });
+        pMesh->Translate({ .0f,1.5f,0.f });
+        pMesh->UpdateTransforms();
 
         //Light
         AddPointLight(Vector3{0.f, 5.f, 5.f}, 50.f, ColorRGB{1.f, .61f, .45f}); //Backlight
@@ -393,8 +394,8 @@ namespace dae
     void Scene_W4::Update(dae::Timer* pTimer)
     {
         Scene::Update(pTimer);
-        pMesh->RotateY( PI_DIV_2 * pTimer->GetTotal());
-        pMesh->UpdateTransforms();
+        // pMesh->RotateY( PI_DIV_2 * pTimer->GetTotal());
+        // pMesh->UpdateTransforms();
     }
 
 #pragma endregion
