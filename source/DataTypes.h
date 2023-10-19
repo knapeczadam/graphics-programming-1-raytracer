@@ -116,11 +116,17 @@ namespace dae
             positions.push_back(triangle.v1);
             positions.push_back(triangle.v2);
 
+            transformedPositions.push_back(triangle.v0);
+            transformedPositions.push_back(triangle.v1);
+            transformedPositions.push_back(triangle.v2);
+
             indices.push_back(startIndex);
             indices.push_back(++startIndex);
             indices.push_back(++startIndex);
 
             normals.push_back(triangle.normal);
+            
+            transformedNormals.push_back(triangle.normal);
 
             //Not ideal, but making sure all vertices are updated
             if (!ignoreTransformUpdate)
@@ -141,7 +147,7 @@ namespace dae
 
         void UpdateTransforms()
         {
-            const auto finalTransform{ translationTransform * rotationTransform * scaleTransform};
+            const auto finalTransform{scaleTransform * rotationTransform * translationTransform};
             for (size_t idx{0}; idx < positions.size(); ++idx)
             {
                 transformedPositions[idx] = finalTransform.TransformPoint(positions[idx]);

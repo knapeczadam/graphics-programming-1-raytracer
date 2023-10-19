@@ -130,6 +130,7 @@ namespace dae
 #pragma region TriangeMesh HitTest
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
+            HitRecord hit;
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
                 const Vector3 v0{mesh.transformedPositions[mesh.indices[idx]]};
@@ -140,12 +141,19 @@ namespace dae
                 triangle.cullMode = mesh.cullMode;
                 triangle.materialIndex = mesh.materialIndex;
                 
-                if (HitTest_Triangle(triangle, ray, hitRecord, ignoreHitRecord))
+                if (HitTest_Triangle(triangle, ray, hit, ignoreHitRecord))
                 {
-                    return true;
+                    hitRecord.didHit = true;
+                    if (hit.t < hitRecord.t)
+                    {
+                        hitRecord.t = hit.t;
+                        hitRecord.origin = hit.origin;
+                        hitRecord.normal = hit.normal;
+                        hitRecord.materialIndex = triangle.materialIndex;
+                    }
                 }
             }
-            return false;
+            return hitRecord.didHit;
         }
 
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)

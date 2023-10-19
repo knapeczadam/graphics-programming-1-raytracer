@@ -9,6 +9,7 @@
 #include "Material.h"
 #include "Scene.h"
 #include "Utils.h"
+#include "Macros.h"
 
 #include <execution>
 #include <numeric>
@@ -798,7 +799,6 @@ namespace dae
         const auto& lights = pScene->GetLights();
         const auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
-#define MT 1
 #if MT
         std::for_each(std::execution::par, m_VerticalIter.begin(), m_VerticalIter.end(),
                       [this, FOV, camera, cameraToWorld, pScene, lights, materials, aspectRatio](int py)

@@ -137,5 +137,6 @@ namespace dae
         void Update(dae::Timer* pTimer) override;
     private:
         TriangleMesh* pMesh {nullptr};
+        TriangleMesh* m_Meshes[3]{};
     };
 }
