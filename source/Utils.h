@@ -1,8 +1,10 @@
 #pragma once
-#include <cassert>
-#include <fstream>
 #include "Math.h"
 #include "DataTypes.h"
+#include "Macros.h"
+
+#include <cassert>
+#include <fstream>
 
 namespace dae
 {
@@ -128,8 +130,37 @@ namespace dae
         }
 #pragma endregion
 #pragma region TriangeMesh HitTest
-        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+        inline bool SlabTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
         {
+            const float tx1{(mesh.transformedMinAABB.x - ray.origin.x) / ray.direction.x};
+            const float tx2{(mesh.transformedMaxAABB.x - ray.origin.x) / ray.direction.x};
+
+            float tmin{std::min(tx1, tx2)};
+            float tmax{std::max(tx1, tx2)};
+
+            const float ty1{(mesh.transformedMinAABB.y - ray.origin.y) / ray.direction.y};
+            const float ty2{(mesh.transformedMaxAABB.y - ray.origin.y) / ray.direction.y};
+
+            tmin = std::max(tmin, std::min(ty1, ty2));
+            tmax = std::min(tmax, std::max(ty1, ty2));
+
+            const float tz1{(mesh.transformedMinAABB.z - ray.origin.z) / ray.direction.z};
+            const float tz2{(mesh.transformedMaxAABB.z - ray.origin.z) / ray.direction.z};
+
+            tmin = std::max(tmin, std::min(tz1, tz2));
+            tmax = std::min(tmax, std::max(tz1, tz2));
+
+            return tmax > 0 and tmax >= tmin;
+        }
+        
+        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord,
+                                         bool ignoreHitRecord = false)
+        {
+            // slab test
+#if SLAB_TEST
+            if (not SlabTest_TriangleMesh(mesh, ray)) return false;
+#endif
+            
             HitRecord hit;
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
