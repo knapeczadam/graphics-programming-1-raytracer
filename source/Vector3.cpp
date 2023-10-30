@@ -98,6 +98,15 @@ namespace dae
         return v1 - (2.f * Vector3::Dot(v1, v2) * v2);
     }
 
+    // implementation of barycentric coordinates
+    Vector3 Vector3::Lico(float f1, const Vector3& v1, float f2, const Vector3& v2, float f3, const Vector3& v3)
+    {
+        Vector3 result;
+        result.x = f1 * v1.x + f2 * v2.x + f3 * v3.x;
+        result.y = f1 * v1.y + f2 * v2.y + f3 * v3.y;
+        result.z = f1 * v1.z + f2 * v2.z + f3 * v3.z;
+        return result;
+    }
 
     Vector3 Vector3::Max(const Vector3& v1, const Vector3& v2)
     {
