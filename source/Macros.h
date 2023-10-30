@@ -1,4 +1,5 @@
 #pragma once
 
 #define QRSQRT 0
-#define MT 1
+#define MULTITHREADING 1
+#define MOLLER_TRUMBORE 1

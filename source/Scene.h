@@ -139,4 +139,24 @@ namespace dae
         TriangleMesh* pMesh {nullptr};
         TriangleMesh* m_Meshes[3]{};
     };
+    
+    //+++++++++++++++++++++++++++++++++++++++++
+    //WEEK 5 Test Scene
+    class Scene_W5 final : public Scene
+    {
+    public:
+        Scene_W5() = default;
+        ~Scene_W5() override = default;
+
+        Scene_W5(const Scene_W5&) = delete;
+        Scene_W5(Scene_W5&&) noexcept = delete;
+        Scene_W5& operator=(const Scene_W5&) = delete;
+        Scene_W5& operator=(Scene_W5&&) noexcept = delete;
+
+        void Initialize() override;
+        void Update(dae::Timer* pTimer) override;
+    private:
+        TriangleMesh* pMesh {nullptr};
+        TriangleMesh* m_Meshes[3]{};
+    };
 }

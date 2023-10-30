@@ -8,6 +8,8 @@ struct SDL_Surface;
 namespace dae
 {
     struct ColorRGB;
+    struct Matrix;
+    struct Vector3;
     class Scene;
 
     class Renderer final
@@ -51,6 +53,9 @@ namespace dae
         void RenderScene_W3_Todo6(Scene* pScene) const;
         
         void RenderScene_W4(Scene* pScene) const;
+
+        void RenderScene_W5(Scene* pScene) const;
+        void RenderPixel(Scene* pScene, uint32_t pixelIndex, float FOV, float aspectRatio, const Matrix& cameraToWorld, const Vector3& cameraOrigin) const;
 
         void UpdateColor(ColorRGB& finalColor, int px, int py) const;
 
@@ -112,5 +117,7 @@ namespace dae
 
         std::vector<int> m_HorizontalIter;
         std::vector<int> m_VerticalIter;
+
+        std::vector<uint32_t> m_PixelIndices;
     };
 }
