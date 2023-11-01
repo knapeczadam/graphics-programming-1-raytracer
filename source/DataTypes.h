@@ -30,6 +30,7 @@ namespace dae
         NoCulling
     };
 
+// #pragma pack (push, 1)
     struct Triangle
     {
         Triangle() = default;
@@ -56,6 +57,7 @@ namespace dae
         TriangleCullMode cullMode{};
         unsigned char materialIndex{};
     };
+// #pragma pack (pop)
 
     struct TriangleMesh
     {
