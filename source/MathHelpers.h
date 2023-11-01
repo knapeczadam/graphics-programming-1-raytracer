@@ -20,6 +20,7 @@ namespace dae
     }
 
     float Q_rsqrt(float number);
+    float Q_rsqrtV2(float number);
 
     inline float Lerpf(float a, float b, float factor)
     {

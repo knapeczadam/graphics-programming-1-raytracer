@@ -1,7 +1,8 @@
 #include "MathHelpers.h"
 
 /**
- * \brief https://www.youtube.com/watch?v=p8u_k2LIZyo
+ * \brief Fast inverse square root
+ * https://www.youtube.com/watch?v=p8u_k2LIZyo
  */
 float dae::Q_rsqrt(float number)
 {
@@ -17,4 +18,17 @@ float dae::Q_rsqrt(float number)
     y = y * (threehalfs - (x2 * y * y)); // 1st iteration
     y = y * (threehalfs - (x2 * y * y)); // 2nd iteration, this can be removed
     return y;
+}
+
+/**
+ * \brief Fast reciprocal square root approximation for number > 0.25
+ * https://youtu.be/k12BJGSc2Nc?t=2142
+ * \param number 
+ * \return 
+ */
+float dae::Q_rsqrtV2(float number)
+{
+    const int tmp {((0x3f800000 << 1) + 0x3f800000 - *(long*)&number) >> 1 };
+    const auto y {*(float*)&tmp};
+    return y * (1.47f - 0.47f * number * y * y);
 }
