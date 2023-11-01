@@ -226,9 +226,9 @@ namespace dae
             HitRecord hit;
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
-                const Vector3 v0{mesh.transformedPositions[mesh.indices[idx]]};
-                const Vector3 v1{mesh.transformedPositions[mesh.indices[idx + 1]]};
-                const Vector3 v2{mesh.transformedPositions[mesh.indices[idx + 2]]};
+                const Vector3& v0{mesh.transformedPositions[mesh.indices[idx]]};
+                const Vector3& v1{mesh.transformedPositions[mesh.indices[idx + 1]]};
+                const Vector3& v2{mesh.transformedPositions[mesh.indices[idx + 2]]};
                 
                 Triangle triangle{v0, v1, v2, mesh.transformedNormals[normIdx]};
                 triangle.cullMode = mesh.cullMode;
