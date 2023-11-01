@@ -17,6 +17,26 @@ namespace dae
 
         inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
+            // https://gamedev.stackexchange.com/questions/96459/fast-ray-sphere-collision-code
+#if SPHERE_INTERSECTION_ANALYTIC
+            const Vector3 L{ray.origin - sphere.origin};
+            const float B{Vector3::Dot(ray.direction, L)};
+            const float C{Vector3::Dot(L, L) - sphere.radius * sphere.radius};
+            if (C > 0.0f and B > 0.0f) return false;
+            const float discriminant{B * B - C};
+            if (discriminant < 0.0f) return false;
+            const float t0{(-B - std::sqrt(discriminant))};
+            if (t0 < ray.min or t0 > ray.max) return false;
+            if (not ignoreHitRecord)
+            {
+                hitRecord.didHit = true;
+                hitRecord.t = t0;
+                hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                hitRecord.normal = (hitRecord.origin - sphere.origin) / sphere.radius;
+                hitRecord.materialIndex = sphere.materialIndex;
+            }
+            return true;
+#else
             const Vector3 L{sphere.origin - ray.origin}; // vector from ray's origin to sphere's center
             const float tca{Vector3::Dot(L, ray.direction)}; // project vector L onto ray's direction vector
             if (tca < 0.0f) return false; // sphere is behind ray's origin (and direction
@@ -36,6 +56,7 @@ namespace dae
                 hitRecord.materialIndex = sphere.materialIndex;
             }
             return true;
+#endif
         }
 
         inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray)
