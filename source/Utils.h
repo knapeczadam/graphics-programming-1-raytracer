@@ -94,6 +94,78 @@ namespace dae
         //TRIANGLE HIT-TESTS
         inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
+#if MOLLER_TRUMBORE
+            const Vector3 e1{triangle.v1 - triangle.v0};
+            const Vector3 e2{triangle.v2 - triangle.v0};
+
+            const Vector3 P{Vector3::Cross(ray.direction, e2)};
+            const float det{Vector3::Dot(e1, P)};
+
+            if (triangle.cullMode == TriangleCullMode::BackFaceCulling)
+            {
+                if (det < 0.0f) return false;
+            }
+            else if (triangle.cullMode == TriangleCullMode::FrontFaceCulling)
+            {
+                if (det > 0.0f) return false;
+            }
+
+            if (triangle.cullMode == TriangleCullMode::NoCulling)
+            {
+                if (AreEqual(det, 0.0f)) return false;
+                const float invDet{1.0f / det};
+                const Vector3 T{ray.origin - triangle.v0};
+
+                const float u{Vector3::Dot(T, P) * invDet};
+                if (u < 0.0f or u > 1.0f) return false;
+
+                const Vector3 Q{Vector3::Cross(T, e1)};
+                const float v{Vector3::Dot(ray.direction, Q) * invDet};
+
+                if (v < 0.0f or u + v > 1.0f) return false;
+
+                const float t{Vector3::Dot(e2, Q) * invDet};
+
+                if (t < ray.min or t > ray.max) return false;
+
+                if (not ignoreHitRecord)
+                {
+                    hitRecord.didHit = true;
+                    hitRecord.t = t;
+                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                    hitRecord.normal = triangle.normal;
+                    hitRecord.materialIndex = triangle.materialIndex;
+                }
+                return true;
+            }
+            else
+            {
+                const Vector3 T{ray.origin - triangle.v0};
+
+                const float u{Vector3::Dot(T, P)};
+                if (u < 0.0f or u > det) return false;
+
+                const Vector3 Q{Vector3::Cross(T, e1)};
+                const float v{Vector3::Dot(ray.direction, Q)};
+                if (v < 0.0f or u + v > det) return false;
+
+                const float invDet{1.0f / det};
+                const float t{Vector3::Dot(e2, Q) * invDet};
+
+                if (t < ray.min or t > ray.max) return false;
+
+                if (not ignoreHitRecord)
+                {
+                    hitRecord.didHit = true;
+                    hitRecord.t = t;
+                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                    hitRecord.normal = triangle.normal;
+                    hitRecord.materialIndex = triangle.materialIndex;
+                }
+                return true;
+            }
+            return false;
+#else
             const float denom{Vector3::Dot(triangle.normal, ray.direction)};
             if (AreEqual(denom, 0.0f)) return false;
 
@@ -142,6 +214,7 @@ namespace dae
                 hitRecord.materialIndex = triangle.materialIndex;
             }
             return true;
+#endif
         }
 
         inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
@@ -173,7 +246,7 @@ namespace dae
 
             return tmax > 0 and tmax >= tmin;
         }
-        
+
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord,
                                          bool ignoreHitRecord = false)
         {
@@ -213,6 +286,7 @@ namespace dae
             HitRecord temp{};
             return HitTest_TriangleMesh(mesh, ray, temp, true);
         }
+
 #pragma endregion
     }
 
