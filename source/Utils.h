@@ -110,61 +110,31 @@ namespace dae
                 if (det > 0.0f) return false;
             }
 
-            if (triangle.cullMode == TriangleCullMode::NoCulling)
+            if (AreEqual(det, 0.0f)) return false;
+            const float invDet{1.0f / det};
+            const Vector3 T{ray.origin - triangle.v0};
+
+            const float u{Vector3::Dot(T, P) * invDet};
+            if (u < 0.0f or u > 1.0f) return false;
+
+            const Vector3 Q{Vector3::Cross(T, e1)};
+            const float v{Vector3::Dot(ray.direction, Q) * invDet};
+
+            if (v < 0.0f or u + v > 1.0f) return false;
+
+            const float t{Vector3::Dot(e2, Q) * invDet};
+
+            if (t < ray.min or t > ray.max) return false;
+
+            if (not ignoreHitRecord)
             {
-                if (AreEqual(det, 0.0f)) return false;
-                const float invDet{1.0f / det};
-                const Vector3 T{ray.origin - triangle.v0};
-
-                const float u{Vector3::Dot(T, P) * invDet};
-                if (u < 0.0f or u > 1.0f) return false;
-
-                const Vector3 Q{Vector3::Cross(T, e1)};
-                const float v{Vector3::Dot(ray.direction, Q) * invDet};
-
-                if (v < 0.0f or u + v > 1.0f) return false;
-
-                const float t{Vector3::Dot(e2, Q) * invDet};
-
-                if (t < ray.min or t > ray.max) return false;
-
-                if (not ignoreHitRecord)
-                {
-                    hitRecord.didHit = true;
-                    hitRecord.t = t;
-                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-                    hitRecord.normal = triangle.normal;
-                    hitRecord.materialIndex = triangle.materialIndex;
-                }
-                return true;
+                hitRecord.didHit = true;
+                hitRecord.t = t;
+                hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
+                hitRecord.normal = triangle.normal;
+                hitRecord.materialIndex = triangle.materialIndex;
             }
-            else
-            {
-                const Vector3 T{ray.origin - triangle.v0};
-
-                const float u{Vector3::Dot(T, P)};
-                if (u < 0.0f or u > det) return false;
-
-                const Vector3 Q{Vector3::Cross(T, e1)};
-                const float v{Vector3::Dot(ray.direction, Q)};
-                if (v < 0.0f or u + v > det) return false;
-
-                const float invDet{1.0f / det};
-                const float t{Vector3::Dot(e2, Q) * invDet};
-
-                if (t < ray.min or t > ray.max) return false;
-
-                if (not ignoreHitRecord)
-                {
-                    hitRecord.didHit = true;
-                    hitRecord.t = t;
-                    hitRecord.origin = ray.origin + ray.direction * hitRecord.t;
-                    hitRecord.normal = triangle.normal;
-                    hitRecord.materialIndex = triangle.materialIndex;
-                }
-                return true;
-            }
-            return false;
+            return true;
 #else
             const float denom{Vector3::Dot(triangle.normal, ray.direction)};
             if (AreEqual(denom, 0.0f)) return false;
@@ -247,10 +217,8 @@ namespace dae
             return tmax > 0 and tmax >= tmin;
         }
 
-        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord,
-                                         bool ignoreHitRecord = false)
+        inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
-            // slab test
 #if SLAB_TEST
             if (not SlabTest_TriangleMesh(mesh, ray)) return false;
 #endif
