@@ -40,13 +40,9 @@ namespace dae
             HitRecord hit;
             if (GeometryUtils::HitTest_Sphere(sphere, ray, hit))
             {
-                closestHit.didHit = true;
                 if (hit.t < closestHit.t)
                 {
-                    closestHit.t = hit.t;
-                    closestHit.origin = hit.origin;
-                    closestHit.normal = hit.normal;
-                    closestHit.materialIndex = sphere.materialIndex;
+                    closestHit = hit;
                 }
             }
         }
@@ -59,13 +55,9 @@ namespace dae
             HitRecord hit;
             if (GeometryUtils::HitTest_Plane(plane, ray, hit))
             {
-                closestHit.didHit = true;
                 if (hit.t < closestHit.t)
                 {
-                    closestHit.t = hit.t;
-                    closestHit.origin = hit.origin;
-                    closestHit.normal = hit.normal;
-                    closestHit.materialIndex = plane.materialIndex;
+                    closestHit = hit;
                 }
             }
         }
@@ -78,13 +70,9 @@ namespace dae
             HitRecord hit;
             if (GeometryUtils::HitTest_Triangle(triangle, ray, hit))
             {
-                closestHit.didHit = true;
                 if (hit.t < closestHit.t)
                 {
-                    closestHit.t = hit.t;
-                    closestHit.origin = hit.origin;
-                    closestHit.normal = hit.normal;
-                    closestHit.materialIndex = triangle.materialIndex;
+                    closestHit = hit;
                 }
             }
         }
@@ -97,13 +85,9 @@ namespace dae
             HitRecord hit;
             if (GeometryUtils::HitTest_TriangleMesh(triangleMesh, ray, hit))
             {
-                closestHit.didHit = true;
                 if (hit.t < closestHit.t)
                 {
-                    closestHit.t = hit.t;
-                    closestHit.origin = hit.origin;
-                    closestHit.normal = hit.normal;
-                    closestHit.materialIndex = triangleMesh.materialIndex;
+                    closestHit = hit;
                 }
             }
         }
