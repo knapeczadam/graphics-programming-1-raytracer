@@ -3,7 +3,6 @@
 #include "DataTypes.h"
 #include "Macros.h"
 
-#include <cassert>
 #include <fstream>
 
 namespace dae
@@ -222,7 +221,7 @@ namespace dae
 #if SLAB_TEST
             if (not SlabTest_TriangleMesh(mesh, ray)) return false;
 #endif
-            
+#if TRIANGLE_MESH_WITH_FUNCTION_CALL
             HitRecord hit;
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, ++normIdx)
             {
@@ -247,6 +246,65 @@ namespace dae
                 }
             }
             return hitRecord.didHit;
+#else
+            HitRecord tempHit{};
+
+            for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, normIdx++)
+            {
+                const Vector3& v0 { mesh.transformedPositions[mesh.indices[idx]]};
+                const Vector3& v1 { mesh.transformedPositions[mesh.indices[idx + 1]]};
+                const Vector3& v2 { mesh.transformedPositions[mesh.indices[idx + 2]]};
+
+                const Vector3 e1{ v1 - v0};
+                const Vector3 e2 { v2 - v0};
+
+                const Vector3 P { Vector3::Cross(ray.direction, e2)};
+                const float det {Vector3::Dot(e1, P)};
+
+                if (mesh.cullMode == TriangleCullMode::BackFaceCulling)
+                {
+                    if (det < 0.0f) continue;
+                }
+                else if (mesh.cullMode == TriangleCullMode::FrontFaceCulling)
+                {
+                    if (det > 0.0f) continue;
+                }
+
+                if (AreEqual(det, 0.0f)) continue;
+
+                const float invDet {1.0f / det};
+                const Vector3 T { ray.origin - v0};
+                const float u { Vector3::Dot(T, P) * invDet};
+
+                if (u < 0.0f or u > 1.0f) continue;
+
+                const Vector3 Q { Vector3::Cross(T, e1)};
+                const float v { invDet * Vector3::Dot(ray.direction, Q)};
+
+                if (v < 0.0f or u + v > 1.0f) continue;
+
+                const float t {Vector3::Dot(e2, Q) * invDet};
+
+                if (t < ray.min or t > ray.max)
+                    continue;
+
+                if (t < tempHit.t)
+                {
+                    tempHit.t = t;
+                    hitRecord.didHit = true;
+
+                    if (not ignoreHitRecord)
+                    {
+                        hitRecord.t = t;
+                        hitRecord.origin = ray.origin + ray.direction * t;
+                        // hitRecord.normal = Vector3::Cross(e1, e2).Normalized();
+                        hitRecord.normal = mesh.transformedNormals[normIdx];
+                        hitRecord.materialIndex = mesh.materialIndex;
+                    }
+                }
+            }
+            return hitRecord.didHit;
+#endif
         }
 
         inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
