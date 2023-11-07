@@ -35,6 +35,142 @@ namespace dae
 
     void Renderer::Render(Scene* pScene) const
     {
+        Camera& camera = pScene->GetCamera();
+        const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
+        const float FOV{camera.GetFOV()};
+        const auto& lights = pScene->GetLights();
+        const auto& materials = pScene->GetMaterials();
+        const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+#if MULTITHREADING
+        std::for_each(std::execution::par, m_VerticalIter.begin(), m_VerticalIter.end(),
+                      [this, FOV, camera, cameraToWorld, pScene, lights, materials, aspectRatio](int py)
+                      // [&](int py)
+                      {
+                          Vector3 rayDirection;
+                          for (int px{}; px < m_Width; ++px)
+                          {
+                              const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                              const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                              rayDirection.x = rx * aspectRatio * FOV;
+                              rayDirection.y = ry * FOV;
+                              rayDirection.z = 1.0f;
+                              rayDirection = cameraToWorld.TransformVector(rayDirection);
+                              rayDirection.Normalize();
+
+                              Ray viewRay{camera.origin, rayDirection};
+
+                              HitRecord closestHit{};
+                              pScene->GetClosestHit(viewRay, closestHit);
+
+                              ColorRGB finalColor{};
+                              if (closestHit.didHit)
+                              {
+                                  for (const auto& light : lights)
+                                  {
+                                      const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                                      const float lightDistance{dirToLight.Magnitude()};
+                                      const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                                      Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                                      const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                                      switch (m_CurrentLightingMode)
+                                      {
+                                      case LightingMode::ObservedArea:
+                                          if (observedArea < 0) continue;
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += observedArea;
+                                          break;
+                                      case LightingMode::Radiance:
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+                                          break;
+                                      case LightingMode::BRDF:
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor += materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction);
+                                          break;
+                                      case LightingMode::Combined:
+                                          if (observedArea < 0) continue;
+                                          if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                                          finalColor +=
+                                              LightUtils::GetRadiance(light, closestHit.origin)
+                                              *
+                                              materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
+                                              *
+                                              observedArea;
+                                          break;
+                                      }
+                                  }
+                              }
+                              UpdateColor(finalColor, px, py);
+                          }
+                      });
+#else
+        Vector3 rayDirection;
+        for (int px{}; px < m_Width; ++px)
+        {
+            for (int py{}; py < m_Height; ++py)
+            {
+                const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
+                const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                rayDirection.x = rx * aspectRatio * FOV;
+                rayDirection.y = ry * FOV;
+                rayDirection.z = 1.0f;
+                rayDirection = cameraToWorld.TransformVector(rayDirection);
+                rayDirection.Normalize();
+
+                Ray viewRay{camera.origin, rayDirection};
+
+                HitRecord closestHit{};
+                pScene->GetClosestHit(viewRay, closestHit);
+
+                ColorRGB finalColor{};
+                if (closestHit.didHit)
+                {
+                    for (const auto& light : lights)
+                    {
+                        const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
+                        const float lightDistance{dirToLight.Magnitude()};
+                        const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                        const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        switch (m_CurrentLightingMode)
+                        {
+                        case LightingMode::ObservedArea:
+                            if (observedArea < 0) continue;
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += observedArea;
+                            break;
+                        case LightingMode::Radiance:
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += LightUtils::GetRadiance(light, closestHit.origin);
+                            break;
+                        case LightingMode::BRDF:
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor += materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction);
+                            break;
+                        case LightingMode::Combined:
+                            if (observedArea < 0) continue;
+                            if (m_ShadowsEnabled and pScene->DoesHit(shadowRay)) continue;
+                            finalColor +=
+                                LightUtils::GetRadiance(light, closestHit.origin)
+                                *
+                                materials[closestHit.materialIndex]->Shade(closestHit, dirToLightNormalized, -viewRay.direction)
+                                *
+                                observedArea;
+                            break;
+                        }
+                    }
+                }
+                UpdateColor(finalColor, px, py);
+            }
+        }
+#endif
+        //@END
+        //Update SDL Surface
+        SDL_UpdateWindowSurface(m_pWindow);
+    }
+
+    void Renderer::DyanmicRender(Scene* pScene) const
+    {
         if (dynamic_cast<Scene_W1*>(pScene))
         {
             RenderScene_W1(pScene);
@@ -238,7 +374,6 @@ namespace dae
                 rayDir.Normalize();
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
-                Sphere testSphere{{0.0f, 0.0f, 100.0f}, 50.0f, 0};
                 HitRecord closestHit{};
                 pScene->GetClosestHitSphere(viewRay, closestHit);
                 if (closestHit.didHit)
@@ -1030,7 +1165,7 @@ namespace dae
                 }
             }
         }
-        UpdateColor(finalColor, px, py);
+        UpdateColor(finalColor, static_cast<int>(px), static_cast<int>(py));
     }
 #pragma endregion
 }

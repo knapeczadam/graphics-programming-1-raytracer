@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "Vector3.h"
+#include "Macros.h"
 
 using namespace dae;
 
@@ -68,7 +69,7 @@ int main(int argc, char* args[])
     const auto pTimer = new Timer();
     const auto pRenderer = new Renderer(pWindow);
 
-    const auto pScene = new Scene_W5();
+    const auto pScene = new Scene_W4();
     pScene->Initialize();
 
     //Start loop
@@ -115,7 +116,11 @@ int main(int argc, char* args[])
         pScene->Update(pTimer);
 
         //--------- Render ---------
+#if DYNAMIC_RENDER
+        pRenderer->DyanmicRender(pScene);
+#else
         pRenderer->Render(pScene);
+#endif
 
         //--------- Timer ---------
         pTimer->Update();

@@ -1,5 +1,4 @@
 #pragma once
-#include <cassert>
 
 #include "Math.h"
 #include "vector"
@@ -76,7 +75,7 @@ namespace dae
 
         TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices,
                      const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
-            positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
+            positions(_positions), normals(_normals), indices(_indices), cullMode(_cullMode)
         {
             UpdateTransforms();
         }

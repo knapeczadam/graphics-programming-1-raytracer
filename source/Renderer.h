@@ -24,6 +24,7 @@ namespace dae
         Renderer& operator=(Renderer&&) noexcept = delete;
 
         void Render(Scene* pScene) const;
+        void DyanmicRender(Scene* pScene) const;
         bool SaveBufferToImage() const;
         void ToggleShadow();
         void SwitchLightingMode();
