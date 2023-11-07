@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Utils.h"
 #include "Material.h"
+#include "Macros.h"
 
 namespace dae
 {
@@ -366,6 +367,9 @@ namespace dae
     void Scene_W5::Initialize()
     {
         m_Camera.origin = {0.f, 3.f, -9.f};
+#if SIMPLE_CUBE or SIMPLE_OBJECT or SIMPLE_QUAD
+        m_Camera.origin = {0.f, 1.f, -5.f};
+#endif
         m_Camera.fovAngle = 45.f;
 
         //Materials
@@ -382,8 +386,15 @@ namespace dae
         ////OBJ
          ////===
         pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
-        Utils::ParseOBJ("Resources/lowpoly_bunny.obj",
-                        //Utils::ParseOBJ("Resources/simple_object.obj",
+        std::string path = "Resources/lowpoly_bunny.obj";
+#if SIMPLE_CUBE
+        path = "Resources/simple_cube.obj";
+#elif SIMPLE_OBJECT
+        path = "Resources/simple_object.obj";
+#elif SIMPLE_QUAD
+        path = "Resources/simple_quad.obj";
+#endif
+        Utils::ParseOBJ(path,
                         pMesh->positions,
                         pMesh->normals,
                         pMesh->indices);
@@ -393,6 +404,10 @@ namespace dae
         pMesh->transformedNormals.resize(pMesh->normals.size());
 
         pMesh->Scale({2.0f, 2.0f, 2.0f});
+#if SIMPLE_CUBE or SIMPLE_OBJECT or SIMPLE_QUAD
+        pMesh->Scale({0.7f, 0.7f, 0.7f});
+        pMesh->Translate({0.0f, 1.0f, 0.0f});
+#endif
 
         pMesh->UpdateAABB();
         pMesh->UpdateTransforms();
@@ -412,11 +427,6 @@ namespace dae
         pMesh->RotateY(yawAngle);
         pMesh->UpdateAABB();
         pMesh->UpdateTransforms();
-        // for (const auto& mesh : m_Meshes)
-        // {
-        //     mesh->RotateY(yawAngle);
-        //     mesh->UpdateTransforms();
-        // }
     }
 #pragma endregion
 }
