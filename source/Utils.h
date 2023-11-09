@@ -241,7 +241,7 @@ namespace dae
                         hitRecord.t = hit.t;
                         hitRecord.origin = hit.origin;
                         hitRecord.normal = hit.normal;
-                        hitRecord.materialIndex = triangle.materialIndex;
+                        hitRecord.materialIndex = mesh.materialIndex;
                     }
                 }
             }

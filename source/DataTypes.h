@@ -161,7 +161,7 @@ namespace dae
             }
             for (size_t idx{0}; idx < normals.size(); ++idx)
             {
-                transformedNormals[idx] = finalTransform.TransformVector(normals[idx]);
+                transformedNormals[idx] = finalTransform.TransformVector(normals[idx]).Normalized();
             }
             UpdateTransformedAABB(finalTransform);
         }

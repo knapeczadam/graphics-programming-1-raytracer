@@ -57,7 +57,7 @@ int main(int argc, char* args[])
     const uint32_t height = 480;
 
     SDL_Window* pWindow = SDL_CreateWindow(
-        "RayTracer - Ádám Knapecz",
+        "RayTracer - **Ádám Knapecz (2DAE09)**",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         width, height, 0);
