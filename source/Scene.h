@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <map>
@@ -10,8 +11,8 @@
 namespace dae
 {
     //Forward Declarations
-    class Timer;
-    class Material;
+    class  Timer;
+    class  Material;
     struct Plane;
     struct Sphere;
     struct Light;
@@ -51,17 +52,17 @@ namespace dae
     protected:
         std::string sceneName;
 
-        std::vector<Plane> m_PlaneGeometries{};
-        std::vector<Sphere> m_SphereGeometries{};
-        std::vector<TriangleMesh> m_TriangleMeshGeometries{};
-        std::vector<Light> m_Lights{};
-        std::vector<Material*> m_Materials{};
+        std::vector<Plane>        m_PlaneGeometries        {};
+        std::vector<Sphere>       m_SphereGeometries       {};
+        std::vector<TriangleMesh> m_TriangleMeshGeometries {};
+        std::vector<Light>        m_Lights                 {};
+        std::vector<Material*>    m_Materials              {};
 
-        std::map<Vector3, int> m_Hits;
+        std::map<Vector3, int> m_Hits {};
 
         // temp
-        std::vector<Triangle> m_Triangles{};
-        Camera m_Camera{};
+        std::vector<Triangle> m_Triangles {};
+        Camera m_Camera {};
 
         Sphere* AddSphere(const Vector3& origin, float radius, unsigned char materialIndex = 0);
         Plane* AddPlane(const Vector3& origin, const Vector3& normal, unsigned char materialIndex = 0);
@@ -119,7 +120,7 @@ namespace dae
 
         void Initialize() override;
     };
-    
+
     //+++++++++++++++++++++++++++++++++++++++++
     //WEEK 4 Test Scene
     class Scene_W4 final : public Scene
@@ -135,11 +136,12 @@ namespace dae
 
         void Initialize() override;
         void Update(dae::Timer* pTimer) override;
+
     private:
-        TriangleMesh* pMesh {nullptr};
-        TriangleMesh* m_Meshes[3]{};
+        TriangleMesh* pMesh       {nullptr};
+        TriangleMesh* m_Meshes[3] {};
     };
-    
+
     //+++++++++++++++++++++++++++++++++++++++++
     //WEEK 5 Test Scene
     class Scene_W5 final : public Scene
@@ -155,8 +157,9 @@ namespace dae
 
         void Initialize() override;
         void Update(dae::Timer* pTimer) override;
+
     private:
-        TriangleMesh* pMesh {nullptr};
-        TriangleMesh* m_Meshes[3]{};
+        TriangleMesh* pMesh       {nullptr};
+        TriangleMesh* m_Meshes[3] {};
     };
 }

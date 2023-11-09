@@ -4,17 +4,24 @@
 
 namespace dae
 {
+    Camera::Camera(const Vector3& _origin, float _fovAngle)
+        : origin{_origin}
+        , fovAngle{_fovAngle}
+    {
+    }
+
     Matrix Camera::CalculateCameraToWorld()
     {
         Matrix out;
-        // const float magnitude{ std::sqrt(forward.z * forward.z + forward.x * forward.x) };
-        // right = Vector3{forward.z / magnitude, 0.f, -forward.x / magnitude};
+        
         right = Vector3{forward.z, 0.f, -forward.x}.Normalized();
         up = Vector3::Cross(forward, right);
+        
         out[0] = Vector4{right, 0.f};
         out[1] = Vector4{up, 0.f};
         out[2] = Vector4{forward, 0.f};
         out[3] = Vector4{origin, 1.f};
+        
         return out;
     }
 

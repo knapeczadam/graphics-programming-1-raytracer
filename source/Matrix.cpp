@@ -1,9 +1,8 @@
 #include "Matrix.h"
 #include "Vector4.h"
+#include "MathHelpers.h"
 
 #include <cassert>
-
-#include "MathHelpers.h"
 #include <cmath>
 
 namespace dae

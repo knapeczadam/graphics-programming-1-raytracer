@@ -1087,7 +1087,7 @@ namespace dae
     {
         Camera& camera = pScene->GetCamera();
         const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
-        const float FOV{camera.GetFOV()};   
+        const float FOV{camera.GetFOV()};
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
 #if MULTITHREADING
         std::for_each(std::execution::par, m_PixelIndices.begin(), m_PixelIndices.end(),

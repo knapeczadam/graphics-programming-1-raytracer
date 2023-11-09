@@ -1,23 +1,24 @@
 #pragma once
 
 #include "Math.h"
-#include "vector"
+
+#include <vector>
 
 namespace dae
 {
 #pragma region GEOMETRY
     struct Sphere
     {
-        Vector3 origin{};
-        float radius{};
+        Vector3 origin {};
+        float   radius {0.0f};
 
-        unsigned char materialIndex{0};
+        unsigned char materialIndex {0};
     };
 
     struct Plane
     {
-        Vector3 origin{};
-        Vector3 normal{};
+        Vector3 origin {};
+        Vector3 normal {};
 
         unsigned char materialIndex{0};
     };
@@ -29,7 +30,6 @@ namespace dae
         NoCulling
     };
 
-// #pragma pack (push, 1)
     struct Triangle
     {
         Triangle() = default;
@@ -47,16 +47,15 @@ namespace dae
             normal = Vector3::Cross(edgeV0V1, edgeV0V2).Normalized();
         }
 
-        Vector3 v0{};
-        Vector3 v1{};
-        Vector3 v2{};
+        Vector3 v0     {};
+        Vector3 v1     {};
+        Vector3 v2     {};
+        Vector3 normal {};
 
-        Vector3 normal{};
-
-        TriangleCullMode cullMode{};
-        unsigned char materialIndex{};
+        TriangleCullMode cullMode {};
+        
+        unsigned char materialIndex {0};
     };
-// #pragma pack (pop)
 
     struct TriangleMesh
     {
@@ -74,31 +73,34 @@ namespace dae
         }
 
         TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices,
-                     const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
-            positions(_positions), normals(_normals), indices(_indices), cullMode(_cullMode)
+                     const std::vector<Vector3>& _normals, TriangleCullMode _cullMode)
+            : positions(_positions)
+            , normals(_normals)
+            , indices(_indices)
+            , cullMode(_cullMode)
         {
             UpdateTransforms();
         }
 
-        std::vector<Vector3> positions{};
-        std::vector<Vector3> normals{};
-        std::vector<int> indices{};
-        unsigned char materialIndex{};
+        std::vector<Vector3> positions            {};
+        std::vector<Vector3> transformedPositions {};
+        std::vector<Vector3> normals              {};
+        std::vector<Vector3> transformedNormals   {};
+        std::vector<int>     indices              {};
+        
+        unsigned char materialIndex {0};
 
-        TriangleCullMode cullMode{TriangleCullMode::BackFaceCulling};
+        TriangleCullMode cullMode = TriangleCullMode::BackFaceCulling;
 
-        Matrix rotationTransform{};
-        Matrix translationTransform{};
-        Matrix scaleTransform{};
+        Matrix rotationTransform    {};
+        Matrix translationTransform {};
+        Matrix scaleTransform       {};
 
-        std::vector<Vector3> transformedPositions{};
-        std::vector<Vector3> transformedNormals{};
+        Vector3 minAABB {};
+        Vector3 maxAABB {};
 
-        Vector3 minAABB{};
-        Vector3 maxAABB{};
-
-        Vector3 transformedMinAABB{};
-        Vector3 transformedMaxAABB{};
+        Vector3 transformedMinAABB {};
+        Vector3 transformedMaxAABB {};
 
         void Translate(const Vector3& translation)
         {
@@ -132,7 +134,7 @@ namespace dae
             indices.push_back(++startIndex);
 
             normals.push_back(triangle.normal);
-            
+
             transformedNormals.push_back(triangle.normal);
 
             //Not ideal, but making sure all vertices are updated
@@ -180,7 +182,7 @@ namespace dae
 
         void UpdateTransformedAABB(const Matrix& finalTransform)
         {
-            Vector3 tMinAABB {finalTransform.TransformPoint(minAABB)};
+            Vector3 tMinAABB{finalTransform.TransformPoint(minAABB)};
             Vector3 tMaxAABB = tMinAABB;
 
             // (xmax, ymin, zmin)
@@ -226,32 +228,31 @@ namespace dae
 
     struct Light
     {
-        Vector3 origin{};
-        Vector3 direction{};
-        ColorRGB color{};
-        float intensity{};
-
-        LightType type{};
+        Vector3   origin    {};
+        Vector3   direction {};
+        ColorRGB  color     {};
+        LightType type      {};
+        float     intensity {0.0f};
     };
 #pragma endregion
 #pragma region MISC
     struct Ray
     {
-        Vector3 origin{};
-        Vector3 direction{};
+        Vector3 origin    {};
+        Vector3 direction {};
 
-        float min{0.0001f};
-        float max{FLT_MAX};
+        float min {0.0001f};
+        float max {FLT_MAX};
     };
 
     struct HitRecord
     {
-        Vector3 origin{};
-        Vector3 normal{};
-        float t = FLT_MAX;
+        Vector3 origin {};
+        Vector3 normal {};
+        float t {FLT_MAX};
 
-        bool didHit{false};
-        unsigned char materialIndex{0};
+        bool didHit {false};
+        unsigned char materialIndex {0};
     };
 #pragma endregion
 }

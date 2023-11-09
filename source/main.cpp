@@ -69,21 +69,21 @@ int main(int argc, char* args[])
     const auto pTimer = new Timer();
     const auto pRenderer = new Renderer(pWindow);
 #if DYNAMIC_RENDER
-    #if SCENE_W1
+#if SCENE_W1
         const auto pScene = new Scene_W1();
-    #elif SCENE_W2
+#elif SCENE_W2
         const auto pScene = new Scene_W2();
-    #elif SCENE_W3
+#elif SCENE_W3
         const auto pScene = new Scene_W3();
-    #elif SCENE_W4
+#elif SCENE_W4
         const auto pScene = new Scene_W4();
-    #elif SCENE_W5
+#elif SCENE_W5
         const auto pScene = new Scene_W5();
-    #endif
+#endif
 #else
     const auto pScene = new Scene_W4();
 #endif
-    
+
     pScene->Initialize();
 
     //Start loop

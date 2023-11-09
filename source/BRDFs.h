@@ -1,6 +1,8 @@
 #pragma once
-#include <algorithm>
+
 #include "Math.h"
+
+#include <algorithm>
 
 namespace dae
 {

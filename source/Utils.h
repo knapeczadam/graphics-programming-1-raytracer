@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Math.h"
 #include "DataTypes.h"
 #include "Macros.h"
@@ -251,15 +252,15 @@ namespace dae
 
             for (size_t idx{0}, normIdx{0}; idx < mesh.indices.size(); idx += 3, normIdx++)
             {
-                const Vector3& v0 { mesh.transformedPositions[mesh.indices[idx]]};
-                const Vector3& v1 { mesh.transformedPositions[mesh.indices[idx + 1]]};
-                const Vector3& v2 { mesh.transformedPositions[mesh.indices[idx + 2]]};
+                const Vector3& v0{mesh.transformedPositions[mesh.indices[idx]]};
+                const Vector3& v1{mesh.transformedPositions[mesh.indices[idx + 1]]};
+                const Vector3& v2{mesh.transformedPositions[mesh.indices[idx + 2]]};
 
-                const Vector3 e1{ v1 - v0};
-                const Vector3 e2 { v2 - v0};
+                const Vector3 e1{v1 - v0};
+                const Vector3 e2{v2 - v0};
 
-                const Vector3 P { Vector3::Cross(ray.direction, e2)};
-                const float det {Vector3::Dot(e1, P)};
+                const Vector3 P{Vector3::Cross(ray.direction, e2)};
+                const float det{Vector3::Dot(e1, P)};
 
                 if (mesh.cullMode == TriangleCullMode::BackFaceCulling)
                 {
@@ -272,18 +273,18 @@ namespace dae
 
                 if (AreEqual(det, 0.0f)) continue;
 
-                const float invDet {1.0f / det};
-                const Vector3 T { ray.origin - v0};
-                const float u { Vector3::Dot(T, P) * invDet};
+                const float invDet{1.0f / det};
+                const Vector3 T{ray.origin - v0};
+                const float u{Vector3::Dot(T, P) * invDet};
 
                 if (u < 0.0f or u > 1.0f) continue;
 
-                const Vector3 Q { Vector3::Cross(T, e1)};
-                const float v { invDet * Vector3::Dot(ray.direction, Q)};
+                const Vector3 Q{Vector3::Cross(T, e1)};
+                const float v{invDet * Vector3::Dot(ray.direction, Q)};
 
                 if (v < 0.0f or u + v > 1.0f) continue;
 
-                const float t {Vector3::Dot(e2, Q) * invDet};
+                const float t{Vector3::Dot(e2, Q) * invDet};
 
                 if (t < ray.min or t > ray.max)
                     continue;

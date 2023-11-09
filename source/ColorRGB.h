@@ -1,4 +1,5 @@
 #pragma once
+
 #include "MathHelpers.h"
 
 namespace dae

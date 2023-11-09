@@ -1,4 +1,5 @@
 #include "Scene.h"
+
 #include "Utils.h"
 #include "Material.h"
 #include "Macros.h"
@@ -411,7 +412,7 @@ namespace dae
 
         pMesh->UpdateAABB();
         pMesh->UpdateTransforms();
-        
+
 
         //Light
         AddPointLight(Vector3{0.f, 5.f, 5.f}, 50.f, ColorRGB{1.f, .61f, .45f}); //Backlight

@@ -52,7 +52,7 @@ namespace dae
         void RenderScene_W3_Todo3(Scene* pScene) const;
         void RenderScene_W3_Todo4(Scene* pScene) const;
         void RenderScene_W3_Todo6(Scene* pScene) const;
-        
+
         void RenderScene_W4(Scene* pScene) const;
 
         void RenderScene_W5(Scene* pScene) const;
@@ -105,20 +105,19 @@ namespace dae
         };
 
     private:
-        SDL_Window* m_pWindow{};
+        SDL_Window*  m_pWindow       {nullptr};
+        SDL_Surface* m_pBuffer       {nullptr};
+        uint32_t*    m_pBufferPixels {nullptr};
 
-        SDL_Surface* m_pBuffer{};
-        uint32_t* m_pBufferPixels{};
+        int m_Width  {0};
+        int m_Height {0};
 
-        int m_Width{};
-        int m_Height{};
+        LightingMode m_CurrentLightingMode {LightingMode::Combined};
+        
+        bool m_ShadowsEnabled {true};
 
-        LightingMode m_CurrentLightingMode{LightingMode::Combined};
-        bool m_ShadowsEnabled{true};
-
-        std::vector<int> m_HorizontalIter;
-        std::vector<int> m_VerticalIter;
-
-        std::vector<uint32_t> m_PixelIndices;
+        std::vector<int>      m_HorizontalIter {};
+        std::vector<int>      m_VerticalIter   {};
+        std::vector<uint32_t> m_PixelIndices   {};
     };
 }
