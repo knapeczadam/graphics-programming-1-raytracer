@@ -20,13 +20,20 @@ namespace dae
             // https://gamedev.stackexchange.com/questions/96459/fast-ray-sphere-collision-code
 #if SPHERE_INTERSECTION_ANALYTIC
             const Vector3 L{ray.origin - sphere.origin};
+            
             const float B{Vector3::Dot(ray.direction, L)};
             const float C{Vector3::Dot(L, L) - sphere.radius * sphere.radius};
+            
             if (C > 0.0f and B > 0.0f) return false;
+            
             const float discriminant{B * B - C};
+            
             if (discriminant < 0.0f) return false;
+            
             const float t0{(-B - std::sqrt(discriminant))};
+            
             if (t0 < ray.min or t0 > ray.max) return false;
+            
             if (not ignoreHitRecord)
             {
                 hitRecord.didHit = true;
@@ -40,13 +47,16 @@ namespace dae
             const Vector3 L{sphere.origin - ray.origin}; // vector from ray's origin to sphere's center
             const float tca{Vector3::Dot(L, ray.direction)}; // project vector L onto ray's direction vector
             if (tca < 0.0f) return false; // sphere is behind ray's origin (and direction
+            
             const float d2{Vector3::Dot(L, L) - tca * tca}; // distance from sphere center to ray
             const float radius2{sphere.radius * sphere.radius};
             if (d2 > radius2) return false;
+            
             const float thc{std::sqrt(radius2 - d2)}; // distance from ray to sphere surface
             float t0{tca - thc}; // distance from ray's origin to sphere surface
             //float t1{tca + thc}; // distance from ray's origin to sphere surface
             if (t0 < ray.min or t0 > ray.max) return false;
+            
             if (not ignoreHitRecord)
             {
                 hitRecord.didHit = true;
@@ -70,9 +80,13 @@ namespace dae
         inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
         {
             const float denom{Vector3::Dot(plane.normal, ray.direction)};
+            
             if (denom >= 0.0f) return false;
+            
             const float t{Vector3::Dot(plane.origin - ray.origin, plane.normal) / denom};
+            
             if (t < ray.min or t > ray.max) return false;
+            
             if (not ignoreHitRecord)
             {
                 hitRecord.didHit = true;
@@ -111,10 +125,11 @@ namespace dae
             }
 
             if (AreEqual(det, 0.0f)) return false;
+            
             const float invDet{1.0f / det};
             const Vector3 T{ray.origin - triangle.v0};
-
             const float u{Vector3::Dot(T, P) * invDet};
+            
             if (u < 0.0f or u > 1.0f) return false;
 
             const Vector3 Q{Vector3::Cross(T, e1)};
@@ -286,8 +301,7 @@ namespace dae
 
                 const float t{Vector3::Dot(e2, Q) * invDet};
 
-                if (t < ray.min or t > ray.max)
-                    continue;
+                if (t < ray.min or t > ray.max) continue;
 
                 if (t < tempHit.t)
                 {

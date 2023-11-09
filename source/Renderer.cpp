@@ -23,13 +23,15 @@ namespace dae
         //Initialize
         SDL_GetWindowSize(pWindow, &m_Width, &m_Height);
         m_pBufferPixels = static_cast<uint32_t*>(m_pBuffer->pixels);
+        
         m_HorizontalIter.resize(m_Width);
         m_VerticalIter.resize(m_Height);
-        std::iota(m_HorizontalIter.begin(), m_HorizontalIter.end(), 0);
-        std::iota(m_VerticalIter.begin(), m_VerticalIter.end(), 0);
-
+        
         const uint32_t amountOfPixels{static_cast<uint32_t>(m_Width * m_Height)};
         m_PixelIndices.resize(amountOfPixels);
+        
+        std::iota(m_HorizontalIter.begin(), m_HorizontalIter.end(), 0);
+        std::iota(m_VerticalIter.begin(), m_VerticalIter.end(), 0);
         std::iota(m_PixelIndices.begin(), m_PixelIndices.end(), 0);
     }
 
@@ -41,6 +43,7 @@ namespace dae
         const auto& lights = pScene->GetLights();
         const auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+        
 #if MULTITHREADING
         std::for_each(std::execution::par, m_VerticalIter.begin(), m_VerticalIter.end(),
                       [this, FOV, camera, cameraToWorld, pScene, lights, materials, aspectRatio](int py)
@@ -51,6 +54,7 @@ namespace dae
                           {
                               const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                               const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                              
                               rayDirection.x = rx * aspectRatio * FOV;
                               rayDirection.y = ry * FOV;
                               rayDirection.z = 1.0f;
@@ -70,8 +74,11 @@ namespace dae
                                       const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                                       const float lightDistance{dirToLight.Magnitude()};
                                       const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                                      
                                       Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                                      
                                       const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                                      
                                       switch (m_CurrentLightingMode)
                                       {
                                       case LightingMode::ObservedArea:
@@ -111,6 +118,7 @@ namespace dae
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDirection.x = rx * aspectRatio * FOV;
                 rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
@@ -130,8 +138,11 @@ namespace dae
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
                         const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        
                         Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                        
                         const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        
                         switch (m_CurrentLightingMode)
                         {
                         case LightingMode::ObservedArea:
@@ -280,10 +291,12 @@ namespace dae
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 ColorRGB finalColor{rayDir.x, rayDir.y, rayDir.z};
                 UpdateColor(finalColor, px, py);
             }
@@ -298,21 +311,25 @@ namespace dae
         auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 Sphere testSphere{{0.0f, 0.0f, 100.0f}, 50.0f, 0};
                 HitRecord closestHit{};
                 GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -329,21 +346,25 @@ namespace dae
     {
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 Sphere testSphere{{0.0f, 0.0f, 100.0f}, 50.0f, 0};
                 HitRecord closestHit{};
                 GeometryUtils::HitTest_Sphere(testSphere, viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     const float scaled_t{(closestHit.t - 50.0f) / 40.0f};
@@ -362,20 +383,24 @@ namespace dae
         auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 HitRecord closestHit{};
                 pScene->GetClosestHitSphere(viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -393,20 +418,24 @@ namespace dae
         auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 HitRecord closestHit{};
                 pScene->GetClosestHit(viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -424,21 +453,25 @@ namespace dae
         auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 HitRecord closestHit{};
                 Plane testPlane{{0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0};
                 GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -455,21 +488,25 @@ namespace dae
     {
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDir{};
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDir.x = rx * aspectRatio;
                 rayDir.y = ry;
                 rayDir.z = 1.0f;
                 rayDir.Normalize();
+                
                 Ray viewRay{{0.0f, 0.0f, 0.0f}, rayDir};
                 ColorRGB finalColor{};
                 HitRecord closestHit{};
                 Plane testPlane{{0.0f, -50.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, 0};
                 GeometryUtils::HitTest_Plane(testPlane, viewRay, closestHit);
+                
                 if (closestHit.didHit)
                 {
                     const float scaled_t{closestHit.t / 500.0f};
@@ -772,12 +809,14 @@ namespace dae
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDirection;
         auto& lights = pScene->GetLights();
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDirection.x = rx * aspectRatio * FOV;
                 rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
@@ -790,6 +829,7 @@ namespace dae
                 pScene->GetClosestHit(viewRay, closestHit);
 
                 ColorRGB finalColor{};
+                
                 if (closestHit.didHit)
                 {
                     finalColor = materials[closestHit.materialIndex]->Shade();
@@ -798,7 +838,9 @@ namespace dae
                         closestHit.origin += closestHit.normal * 0.001f;
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
+                        
                         Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        
                         if (pScene->DoesHit(shadowRay))
                         {
                             finalColor *= 0.5f;
@@ -821,12 +863,14 @@ namespace dae
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDirection;
         auto& lights = pScene->GetLights();
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDirection.x = rx * aspectRatio * FOV;
                 rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
@@ -847,8 +891,11 @@ namespace dae
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
                         const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        
                         Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        
                         const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        
                         switch (m_CurrentLightingMode)
                         {
                         case LightingMode::ObservedArea:
@@ -881,12 +928,14 @@ namespace dae
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
         Vector3 rayDirection;
         auto& lights = pScene->GetLights();
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDirection.x = rx * aspectRatio * FOV;
                 rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
@@ -907,8 +956,11 @@ namespace dae
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
                         const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        
                         Ray shadowRay{closestHit.origin, dirToLight / lightDistance, 0.0001f, lightDistance};
+                        
                         const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        
                         switch (m_CurrentLightingMode)
                         {
                         case LightingMode::ObservedArea:
@@ -946,6 +998,7 @@ namespace dae
         const auto& lights = pScene->GetLights();
         const auto& materials = pScene->GetMaterials();
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+        
 #if MULTITHREADING
         std::for_each(std::execution::par, m_VerticalIter.begin(), m_VerticalIter.end(),
                       [this, FOV, camera, cameraToWorld, pScene, lights, materials, aspectRatio](int py)
@@ -956,6 +1009,7 @@ namespace dae
                           {
                               const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                               const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                              
                               rayDirection.x = rx * aspectRatio * FOV;
                               rayDirection.y = ry * FOV;
                               rayDirection.z = 1.0f;
@@ -968,6 +1022,7 @@ namespace dae
                               pScene->GetClosestHit(viewRay, closestHit);
 
                               ColorRGB finalColor{};
+                              
                               if (closestHit.didHit)
                               {
                                   for (const auto& light : lights)
@@ -975,8 +1030,11 @@ namespace dae
                                       const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                                       const float lightDistance{dirToLight.Magnitude()};
                                       const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                                      
                                       Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                                      
                                       const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                                      
                                       switch (m_CurrentLightingMode)
                                       {
                                       case LightingMode::ObservedArea:
@@ -1010,12 +1068,14 @@ namespace dae
                       });
 #else
         Vector3 rayDirection;
+        
         for (int px{}; px < m_Width; ++px)
         {
             for (int py{}; py < m_Height; ++py)
             {
                 const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
                 const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+                
                 rayDirection.x = rx * aspectRatio * FOV;
                 rayDirection.y = ry * FOV;
                 rayDirection.z = 1.0f;
@@ -1028,6 +1088,7 @@ namespace dae
                 pScene->GetClosestHit(viewRay, closestHit);
 
                 ColorRGB finalColor{};
+                
                 if (closestHit.didHit)
                 {
                     for (const auto& light : lights)
@@ -1035,8 +1096,11 @@ namespace dae
                         const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                         const float lightDistance{dirToLight.Magnitude()};
                         const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                        
                         Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                        
                         const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                        
                         switch (m_CurrentLightingMode)
                         {
                         case LightingMode::ObservedArea:
@@ -1089,6 +1153,7 @@ namespace dae
         const Matrix cameraToWorld{camera.CalculateCameraToWorld()};
         const float FOV{camera.GetFOV()};
         const float aspectRatio{static_cast<float>(m_Width) / static_cast<float>(m_Height)};
+        
 #if MULTITHREADING
         std::for_each(std::execution::par, m_PixelIndices.begin(), m_PixelIndices.end(),
                       [this, FOV, camera, cameraToWorld, pScene, aspectRatio](uint32_t pixelIndex)
@@ -1113,6 +1178,7 @@ namespace dae
 
         const float rx{(static_cast<float>(px) + 0.5f) / static_cast<float>(m_Width) * 2.0f - 1.0f};
         const float ry{1.0f - (static_cast<float>(py) + 0.5f) / static_cast<float>(m_Height) * 2.0f};
+        
         Vector3 rayDirection;
         rayDirection.x = rx * aspectRatio * FOV;
         rayDirection.y = ry * FOV;
@@ -1133,8 +1199,11 @@ namespace dae
                 const Vector3 dirToLight{LightUtils::GetDirectionToLight(light, closestHit.origin)};
                 const float lightDistance{dirToLight.Magnitude()};
                 const Vector3 dirToLightNormalized{dirToLight / lightDistance};
+                
                 Ray shadowRay{closestHit.origin + closestHit.normal * 0.001f, dirToLightNormalized, 0.0001f, lightDistance};
+                
                 const float observedArea{Vector3::Dot(dirToLightNormalized, closestHit.normal)};
+                
                 switch (m_CurrentLightingMode)
                 {
                 case LightingMode::ObservedArea:
