@@ -80,14 +80,4 @@
       <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="Resources\lowpoly_bunny.obj" />
-    <Object Include="Resources\simple_cube.obj" />
-    <Object Include="Resources\simple_object.obj" />
-    <Object Include="Resources\simple_quad.obj" />
-    <Object Include="Resources\test.obj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="benchmark.txt" />
-  </ItemGroup>
 </Project>

@@ -120,16 +120,6 @@ xcopy "$(SolutionDir)..\lib\vld\x64\Microsoft.DTfW.DHL.manifest" "$(OutDir)" /y 
     <ClCompile Include="Vector3.cpp" />
     <ClCompile Include="Vector4.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="Resources\lowpoly_bunny.obj" />
-    <Object Include="Resources\simple_cube.obj" />
-    <Object Include="Resources\simple_object.obj" />
-    <Object Include="Resources\simple_quad.obj" />
-    <Object Include="Resources\test.obj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="benchmark.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
