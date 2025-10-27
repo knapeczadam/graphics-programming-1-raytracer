@@ -18,7 +18,7 @@ It’s shared mainly for **archival and educational purposes** — documenting m
 
 ## 🔎 Course Information
 
-**📘 Course:** Graphics Programming 1  
+**📚 Course:** Graphics Programming 1  
 **🏫 University:** Howest University of Applied Sciences - Digital Arts and Entertainment   
 **📍 Location:** Kortrijk, Belgium  
 **🗓️ Academic year:** 2023–24 | Third semester  
