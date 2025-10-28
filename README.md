@@ -1,4 +1,4 @@
-# 💡 Graphics Programming 1 – Raytracer  
+# 🐇 Graphics Programming 1 – Raytracer  
 
 Hey there, fellow DAE student, curious visitor, or graphics enthusiast 👋  
 Welcome to my **Graphics Programming 1 – Raytracer** repository — part of the **third semester (2023)** at **DAE**.
